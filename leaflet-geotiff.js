@@ -141,7 +141,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         }
     },
     _reset: function () {
-        if (this.hasOwnProperty('_map')) {
+        if (this.hasOwnProperty('_map') && this._map) {
             if (this._rasterBounds) {
                 topLeft = this._map.latLngToLayerPoint(this._map.getBounds().getNorthWest()),
                     size = this._map.latLngToLayerPoint(this._map.getBounds().getSouthEast())._subtract(topLeft);
