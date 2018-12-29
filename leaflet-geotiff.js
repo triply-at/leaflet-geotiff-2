@@ -213,12 +213,10 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             //Draw clipping polygon
             if (this.options.clip) {
                 this._clipMaskToPixelPoints();
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.rect(args.xStart-10,args.yStart-10,args.plotWidth+20,args.plotHeight+20);
-                //Draw vertices in reverse order
-                for (var i = this._pixelClipPoints.length-1; i >= 0; i--) {
+                ctx.globalCompositeOperation = 'destination-in';
+                for (var i = 0; i < this._pixelClipPoints.length; i++) {
                     var pix = this._pixelClipPoints[i];
-                    ctx['lineTo'](pix.x, pix.y);
+                    ctx.lineTo(pix.x, pix.y);
                 }
                 ctx.closePath();
                 ctx.fill();
