@@ -158,12 +158,20 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         this.options.clip = clipLatLngs;
         this._reset();
     },
-    _clipMaskToPixelPoints: function() {
+
+    _getPixelByLatLng: function(latLng) {
+        var topLeft = this._map.latLngToLayerPoint(this._map.getBounds().getNorthWest());
+        var mercPoint = this._map.latLngToLayerPoint(latLng);
+        return L.point(mercPoint.x - topLeft.x, mercPoint.y - topLeft.y);
+    },
+
+    _clipMaskToPixelPoints: function(i) {
         if (this.options.clip) {
             var topLeft = this._map.latLngToLayerPoint(this._map.getBounds().getNorthWest());
             var pixelClipPoints = [];
-            for (var p = 0; p < this.options.clip.length; p++) {
-                var mercPoint = this._map.latLngToLayerPoint(this.options.clip[p]),
+            const clip = this.options.clip[i];
+            for (var p = 0; p < clip.length; p++) {
+                var mercPoint = this._map.latLngToLayerPoint(clip[p]),
                     pixel = L.point(mercPoint.x - topLeft.x, mercPoint.y - topLeft.y);
                 pixelClipPoints.push(pixel);
             }
@@ -172,6 +180,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             this._pixelClipPoints = undefined;
         }
     },
+
     _drawImage: function () {
         if (this.raster.hasOwnProperty('data')) {
             var args = {};
@@ -186,7 +195,6 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             args.plotHeight = args.yFinish-args.yStart;
 
             if ((args.plotWidth<=0) || (args.plotHeight<=0)) {
-                console.log(this.options.name,' is off screen.');
                 var plotCanvas = document.createElement("canvas");
                 plotCanvas.width = size.x;
                 plotCanvas.height = size.y;
@@ -209,21 +217,52 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             ctx.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
 
             this.options.renderer.render(this.raster, plotCanvas, ctx, args);
-
-            //Draw clipping polygon
-            if (this.options.clip) {
-                this._clipMaskToPixelPoints();
-                ctx.globalCompositeOperation = 'destination-in';
-                for (var i = 0; i < this._pixelClipPoints.length; i++) {
-                    var pix = this._pixelClipPoints[i];
-                    ctx.lineTo(pix.x, pix.y);
-                }
-                ctx.closePath();
-                ctx.fill();
-            }
+            var mask = this.createMask(size, args);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.drawImage(mask, 0, 0);
 
             this._image.src = String(plotCanvas.toDataURL());
         }
+    },
+
+    createSubmask: function(size, args, clip) {
+        var canvas = document.createElement("canvas");
+        canvas.width = size.x;
+        canvas.height = size.y;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < clip.length; i++) {
+            var ring = clip[i];
+            if (i > 0) { //inner ring
+                ctx.globalCompositeOperation = 'destination-out';
+            }
+            ctx.beginPath();
+            for (var j = 0; j < ring.length; j++) {
+                var pix = this._getPixelByLatLng(ring[j]);
+                ctx.lineTo(pix.x, pix.y);
+            }
+            ctx.fill();
+        }
+        return canvas;
+    },
+
+    createMask: function(size, args) {
+        var canvas = document.createElement("canvas");
+        canvas.width = size.x;
+        canvas.height = size.y;
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(args.xStart, args.yStart, args.plotWidth, args.plotHeight);
+        //Draw clipping polygon
+        const clip = this.options.clip;
+        if (clip) {
+            ctx.globalCompositeOperation = 'destination-out';
+            for (var idx = 0; idx < clip.length; idx++) {
+                var submask = this.createSubmask(size, args, clip[idx])
+                ctx.drawImage(submask, 0, 0);
+            }
+        }
+        return canvas;
     },
 
     transform: function(rasterImageData, args) {
