@@ -12,6 +12,44 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var GeoTIFF = require('geotiff');
 }
 
+(function () {
+    try {
+        new window.ImageData(new Uint8ClampedArray([0, 0, 0, 0]), 1, 1);
+    } catch (e) {
+        var ImageDataPolyfill = function ImageDataPolyfill() {
+            var args = [].concat(Array.prototype.slice.call(arguments)),
+                data = void 0;
+
+            if (args.length < 2) {
+                throw new TypeError('Failed to construct "ImageData": 2 arguments required, but only ' + args.length + ' present.');
+            }
+
+            if (args.length > 2) {
+                data = args.shift();
+
+                if (!(data instanceof Uint8ClampedArray)) {
+                    throw new TypeError('Failed to construct "ImageData": parameter 1 is not of type "Uint8ClampedArray"');
+                }
+
+                if (data.length !== 4 * args[0] * args[1]) {
+                    throw new Error('Failed to construct "ImageData": The input data byte length is not a multiple of (4 * width * height)');
+                }
+            }
+
+            var width = args[0],
+                height = args[1],
+                canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d'),
+                imageData = ctx.createImageData(width, height);
+
+            if (data) imageData.data.set(data);
+            return imageData;
+        };
+
+        window.ImageData = ImageDataPolyfill;
+    }
+})();
+
 L.LeafletGeotiff = L.ImageOverlay.extend({
 
     options: {
@@ -80,30 +118,41 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         request.responseType = "arraybuffer";
         request.send();
     },
-    _parseTIFF: async function (arrayBuffer) {
-        this.tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
-        this.setBand(this.options.band);
+    _parseTIFF: function (arrayBuffer) {
+        var self = this;
+        GeoTIFF.fromArrayBuffer(arrayBuffer).then(function(tiff){
+            self.tiff = tiff;
+            self.setBand(self.options.band);
 
-        if (!this.options.bounds) {
-            var image = await this.tiff.getImage(this.options.image);
-            var meta = image.getFileDirectory();
-            var x_min = meta.ModelTiepoint[3];
-            var x_max = x_min + meta.ModelPixelScale[0]*meta.ImageWidth;
-            var y_min = meta.ModelTiepoint[4];
-            var y_max = y_min - meta.ModelPixelScale[1]*meta.ImageLength;
-            this._rasterBounds = L.latLngBounds([[y_min,x_min],[y_max,x_max]]);
-            this._reset();
-        }
+            if (!self.options.bounds) {
+                self.tiff.getImage(self.options.image).then(function(img){
+                    var image = img;
+                    var meta = image.getFileDirectory();
+                    var x_min = meta.ModelTiepoint[3];
+                    var x_max = x_min + meta.ModelPixelScale[0]*meta.ImageWidth;
+                    var y_min = meta.ModelTiepoint[4];
+                    var y_max = y_min - meta.ModelPixelScale[1]*meta.ImageLength;
+                    self._rasterBounds = L.latLngBounds([[y_min,x_min],[y_max,x_max]]);
+                    self._reset();
+                });
+            }
+        });
+
     },
-    setBand: async function (band) {
-        this.options.band = band;
+    setBand: function (band) {
+        var self = this;
+        self.options.band = band;
 
-        var image = await this.tiff.getImage(this.options.image);
-        this.raster.data = await image.readRasters({samples: this.options.samples});
-        this.raster.width = image.getWidth();
-        this.raster.height = image.getHeight();
+        self.tiff.getImage(self.options.image).then(function(img){
+            var image = img;
+            image.readRasters({samples: self.options.samples}).then(function(data){
+                self.raster.data = data;
+                self.raster.width = image.getWidth();
+                self.raster.height = image.getHeight();
+                self._reset()
+            });
+        });
 
-        this._reset()
     },
     getRasterArray: function () {
         return this.raster.data;

@@ -6,11 +6,11 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
-    initialize() {
+    initialize: function() {
         this.name = 'Canvas Renderer';
     },
 
-    render(raster, canvas, ctx, args) {
+    render: function(raster, canvas, ctx, args) {
         const rasterImageData = ctx.createImageData(raster.width, raster.height);
         for (let i = 0, j = 0; i < rasterImageData.data.length; i += 4, j += 1) {
             rasterImageData.data[i] = raster.data[0][j]; // R value
