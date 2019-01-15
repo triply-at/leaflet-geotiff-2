@@ -146,9 +146,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         self.tiff.getImage(self.options.image).then(function(img){
             var image = img;
             image.readRasters({samples: self.options.samples}).then(function(data){
-                self.raster.data = data;
-                self.raster.width = image.getWidth();
-                self.raster.height = image.getHeight();
+                var r = data['0'];
+                var g = data['1'];
+                var b = data['2'];
+                self.raster.data = [r,g,b].filter(v => v);
+                self.raster.width = data.width;
+                self.raster.height = data.height;
                 self._reset()
             });
         });

@@ -1,7 +1,7 @@
 {
 	"name": "leaflet-geotiff",
 	"description": "A LeafletJS plugin for displaying geoTIFF raster data.",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"license": "MIT",
 	"author": "Stuart Matthews",
 	"contributors": [
