@@ -123,7 +123,6 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         GeoTIFF.fromArrayBuffer(arrayBuffer).then(function(tiff){
             self.tiff = tiff;
             self.setBand(self.options.band);
-
             if (!self.options.bounds) {
                 self.tiff.getImage(self.options.image).then(function(img){
                     var image = img;
@@ -136,6 +135,39 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
                     self._reset();
                 });
             }
+        }).catch(() => {
+            var blob = new Blob([arrayBuffer], {type: 'image/png'});
+            var urlCreator = window.URL || window.webkitURL;
+            var src = urlCreator.createObjectURL(blob);
+            var img = new Image();
+            img.onload = function() {
+                var width = img.naturalWidth;
+                var height = img.naturalHeight;
+                const cnv = document.createElement('canvas');
+                const cnvCtx = cnv.getContext("2d");
+                cnv.width = width;
+                cnv.height = height;
+                cnvCtx.drawImage(img, 0, 0);
+                var imgData = cnvCtx.getImageData(0, 0, width, height);
+                var data = imgData.data;
+                var r = [];
+                var g = [];
+                var b = [];
+                var a = [];
+                data.forEach(function(color, i) {
+                    var del = i % 4;
+                    if (del === 0) r.push(color);
+                    if (del === 1) g.push(color);
+                    if (del === 2) b.push(color);
+                    if (del === 3) a.push(color);
+                });
+                self.raster.data = [r,g,b,a].filter(v => v);
+                self.raster.width = width;
+                self.raster.height = height;
+                self._rasterBounds = L.latLngBounds(self.options.imgBounds);
+                self._reset();
+            };
+            img.src = src;
         });
 
     },
@@ -149,7 +181,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
                 var r = data['0'];
                 var g = data['1'];
                 var b = data['2'];
-                self.raster.data = [r,g,b].filter(v => v);
+                var a = data['3'];
+                self.raster.data = [r,g,b,a].filter(v => v);
                 self.raster.width = data.width;
                 self.raster.height = data.height;
                 self._reset()

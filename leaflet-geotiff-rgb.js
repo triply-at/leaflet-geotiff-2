@@ -17,7 +17,7 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
             rasterImageData.data[i] = raster.data[0][j]; // R value
             rasterImageData.data[i + 1] = raster.data[isGrayscale ? 0 : 1][j]; // G value
             rasterImageData.data[i + 2] = raster.data[isGrayscale ? 0 : 2][j]; // B value
-            rasterImageData.data[i + 3] = 255; // A value
+            rasterImageData.data[i + 3] = isGrayscale || !raster.data[3] ? 255 : raster.data[3][j]; // A value
         }
         var imageData = this.parent.transform(rasterImageData, args);
         ctx.putImageData(imageData, args.xStart, args.yStart);
