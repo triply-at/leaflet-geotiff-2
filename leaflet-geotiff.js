@@ -135,7 +135,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
                     self._reset();
                 });
             }
-        }).catch(() => {
+        }).catch(function () {
             var blob = new Blob([arrayBuffer], {type: 'image/png'});
             var urlCreator = window.URL || window.webkitURL;
             var src = urlCreator.createObjectURL(blob);
@@ -161,7 +161,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
                     if (del === 2) b.push(color);
                     if (del === 3) a.push(color);
                 });
-                self.raster.data = [r,g,b,a].filter(v => v);
+                self.raster.data = [r, g, b, a].filter(function (v) {
+                    return v;
+                });
                 self.raster.width = width;
                 self.raster.height = height;
                 self._rasterBounds = L.latLngBounds(self.options.imgBounds);
@@ -182,7 +184,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
                 var g = data['1'];
                 var b = data['2'];
                 var a = data['3'];
-                self.raster.data = [r,g,b,a].filter(v => v);
+                self.raster.data = [r,g,b,a].filter(function (v) {
+                    return v;
+                });
                 self.raster.width = data.width;
                 self.raster.height = data.height;
                 self._reset()
