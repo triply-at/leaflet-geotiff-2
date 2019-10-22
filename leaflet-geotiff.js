@@ -120,79 +120,39 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     },
     _parseTIFF: function (arrayBuffer) {
         var self = this;
-        GeoTIFF.fromArrayBuffer(arrayBuffer).then(function(tiff){
-            self.tiff = tiff;
-            self.setBand(self.options.band);
-            if (!self.options.bounds) {
-                self.tiff.getImage(self.options.image).then(function(img){
-                    var image = img;
-                    var meta = image.getFileDirectory();
-                    var x_min = meta.ModelTiepoint[3];
-                    var x_max = x_min + meta.ModelPixelScale[0]*meta.ImageWidth;
-                    var y_min = meta.ModelTiepoint[4];
-                    var y_max = y_min - meta.ModelPixelScale[1]*meta.ImageLength;
-                    self._rasterBounds = L.latLngBounds([[y_min,x_min],[y_max,x_max]]);
-                    self._reset();
-                });
-            }
-        }).catch(function () {
-            var blob = new Blob([arrayBuffer], {type: 'image/png'});
-            var urlCreator = window.URL || window.webkitURL;
-            var src = urlCreator.createObjectURL(blob);
-            var img = new Image();
-            img.onload = function() {
-                var width = img.naturalWidth;
-                var height = img.naturalHeight;
-                const cnv = document.createElement('canvas');
-                const cnvCtx = cnv.getContext("2d");
-                cnv.width = width;
-                cnv.height = height;
-                cnvCtx.drawImage(img, 0, 0);
-                var imgData = cnvCtx.getImageData(0, 0, width, height);
-                var data = imgData.data;
-                var r = [];
-                var g = [];
-                var b = [];
-                var a = [];
-                data.forEach(function(color, i) {
-                    var del = i % 4;
-                    if (del === 0) r.push(color);
-                    if (del === 1) g.push(color);
-                    if (del === 2) b.push(color);
-                    if (del === 3) a.push(color);
-                });
-                self.raster.data = [r, g, b, a].filter(function (v) {
-                    return v;
-                });
-                self.raster.width = width;
-                self.raster.height = height;
-                self._rasterBounds = L.latLngBounds(self.options.imgBounds);
-                self._reset();
-            };
-            img.src = src;
-        });
+        let tiff = GeoTIFF.parse(arrayBuffer);
+        self.tiff = tiff;
+        self.setBand(self.options.band);
+        if (!self.options.bounds) {
+            var image = self.tiff.getImage(self.options.image)
+            var meta = image.getFileDirectory();
+            var x_min = meta.ModelTiepoint[3];
+            var x_max = x_min + meta.ModelPixelScale[0]*meta.ImageWidth;
+            var y_min = meta.ModelTiepoint[4];
+            var y_max = y_min - meta.ModelPixelScale[1]*meta.ImageLength;
+            self._rasterBounds = L.latLngBounds([[y_min,x_min],[y_max,x_max]]);
+            console.log("bounds:", x_min, x_max, y_min, y_max, "meta:", meta);
+            self._reset();
+        }
 
     },
     setBand: function (band) {
         var self = this;
         self.options.band = band;
 
-        self.tiff.getImage(self.options.image).then(function(img){
-            var image = img;
-            image.readRasters({samples: self.options.samples}).then(function(data){
-                var r = data['0'];
-                var g = data['1'];
-                var b = data['2'];
-                var a = data['3'];
-                self.raster.data = [r,g,b,a].filter(function (v) {
-                    return v;
-                });
-                self.raster.width = data.width;
-                self.raster.height = data.height;
-                self._reset()
-            });
+        var image = self.tiff.getImage(self.options.image)
+        var data = image.readRasters({samples: self.options.samples})
+        var r = data['0'];
+        var g = data['1'];
+        var b = data['2'];
+        var a = data['3'];
+        self.raster.data = [r,g,b,a].filter(function (v) {
+            return v;
         });
-
+        self.raster.width = image.getWidth();
+        self.raster.height = image.getHeight();
+        console.log("image", image, "data", data, "raster", self.raster.data);
+        self._reset()
     },
     getRasterArray: function () {
         return this.raster.data;
@@ -309,6 +269,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             var mask = this.createMask(size, args);
             ctx.globalCompositeOperation = 'destination-out';
             ctx.drawImage(mask, 0, 0);
+
+            console.log("imageDataURL:", plotCanvas.toDataURL());
 
             this._image.src = String(plotCanvas.toDataURL());
         }
