@@ -10,7 +10,7 @@
 	"main": "leaflet-geotiff.js",
 	"dependencies": {
 		"leaflet": "^1.0.0",
-		"geotiff": "faroscore/geotiff.js#support_32946"
+		"geotiff": "^v1.0.0-beta.1"
 	},
 	"optionalDependencies": {
 		"plotty": "^0.2.0"
