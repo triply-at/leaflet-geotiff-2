@@ -12,9 +12,9 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
 
     render: function(raster, canvas, ctx, args) {
         var rasterImageData = ctx.createImageData(raster.width, raster.height);
-        var isGrayscale = raster.data.length === 1;
+        var isGrayscale = raster.data.length < 3;
         var maxVal = 255;
-        for(let i=0; i<3; i++){
+        for(let i=0; i<raster.data.length; i++){
             // get max value per band
             /*// first return sorted array of unique values that are not NaN
             let srt = raster.data[i].filter(function(v, index, self){return (!isNaN(v) && self.indexOf(v)===index);}).sort();
