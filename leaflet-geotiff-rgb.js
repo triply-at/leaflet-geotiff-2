@@ -15,13 +15,17 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
         var isGrayscale = raster.data.length === 1;
         var maxVal = 255;
         for(let i=0; i<3; i++){
-            tMax = Math.max(raster.data[i]);
-            if(tMax>maxVal){
-                maxVal=tMax;
+            // get max value per band
+            /*// first return sorted array of unique values that are not NaN
+            let srt = raster.data[i].filter(function(v, index, self){return (!isNaN(v) && self.indexOf(v)===index);}).sort();
+            */
+            //  first return sorted array of values that are not NaN
+            let srt = raster.data[i].filter(function(v, index, self){return !isNaN(v);}).sort();
+            if(srt[srt.length-1]>maxVal){
+                maxVal=srt[srt.length-1];
             }
-            console.log("max value for band"+i+":"+tMax);
+            console.log("min value for band" + i + ": " + srt[0] + ", max value for band" + i + ": " + srt[srt.length-1]);
         }
-        maxVal=1800;
         function scale(val){
             return(Math.round((val/maxVal*255)));
         }
@@ -31,10 +35,18 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
             rasterImageData.data[i + 2] = scale(raster.data[isGrayscale ? 0 : 2][j]); // B value
             rasterImageData.data[i + 3] = isGrayscale || !raster.data[3] ? 255 : raster.data[3][j]; // A value
         }
-        console.log(rasterImageData);
         var imageData = this.parent.transform(rasterImageData, args);
-        console.log("imageData:",imageData);
         ctx.putImageData(imageData, args.xStart, args.yStart);
+        
+        // debug output
+        /* var dPlotCanvas = document.getElementById("debugCanvas");
+        dPlotCanvas.width = raster.width;
+        dPlotCanvas.height = raster.height;
+        var dCtx = dPlotCanvas.getContext("2d");
+        dCtx.clearRect(0, 0, dPlotCanvas.width, dPlotCanvas.height);
+        //this._image.src = plotCanvas.toDataURL();
+        dCtx.putImageData(imageData, 0,0);
+        console.log("imageDataURL (debug version):", dPlotCanvas.toDataURL()); */
     }
 });
 
