@@ -56,7 +56,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         arrowSize: 20,
         band: 0,
         image: 0,
-        renderer: null
+        renderer: null,
+        rBand: 0,
+        gBand: 1,
+        bBand: 2,
+        alphaBand: 0,    // band to use for (generating) alpha channel
+        transpValue: 0   // original band value to interpret as transparent
     },
 
     initialize: function (url, options) {
@@ -142,10 +147,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
         var image = self.tiff.getImage(self.options.image)
         var data = image.readRasters({samples: self.options.samples})
-        var r = data['0'];
-        var g = data['1'];
-        var b = data['2'];
-        var a = data['3'];
+        var r = data[self.options.rBand];
+        var g = data[self.options.gBand];
+        var b = data[self.options.bBand];
+        // map transparency value to alpha channel if transpValue is specified
+        var a = self.options.transpValue?data[self.options.alphaBand].map(function(v){return v==self.options.transpValue?0:255}):data[self.options.alphaBand];
+
         self.raster.data = [r,g,b,a].filter(function (v) {
             return v;
         });
@@ -266,11 +273,10 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             ctx.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
 
             this.options.renderer.render(this.raster, plotCanvas, ctx, args);
-            var mask = this.createMask(size, args);
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.drawImage(mask, 0, 0);
-
-            console.log("imageDataURL:", plotCanvas.toDataURL());
+            // mask caused problems and seems to be not needed for our implementation
+            //var mask = this.createMask(size, args);
+            //ctx.globalCompositeOperation = 'destination-out';
+            //ctx.drawImage(mask, 0, 0);
 
             this._image.src = String(plotCanvas.toDataURL());
         }
