@@ -55,7 +55,7 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
 	render: function(raster, canvas, ctx, args) {
 		var plottyCanvas = document.createElement("canvas");
 		var plot = new plotty.plot({
-			data: raster.data,
+			data: raster.data[0],	// fix for use with rgb conversion (appending alpha channel)
 			width: raster.width, height: raster.height,
 			domain: [this.options.displayMin, this.options.displayMax], 
 			colorScale: this.options.colorScale,
