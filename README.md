@@ -33,6 +33,13 @@ Parameters:
     * `clip` - (optional, default = undefined) Clipping polygon, provided as an array of [lat,lon] coordinates.  Note that this is the Leaflet [lat,lon] convention, not geoJSON [lon,lat].
     * `renderer` - Renderer to use (see below).
 
+Extended parameters for use with `L.LeafletGeotiff.rgb()` renderer:
+  - `rBand` - band index to use as R-band
+  - `gBand` - band index to use as G-band
+  - `bBand` - band index to use as B-band
+  - `alphaBand` - band index to use as alpha-band - NOTE: this can also be used in combination with `transpValue`, then referring to a color band specifying a fixed value to be interpreted as transparent
+  - `transpValue` - for all values equal to `transpValue` in the band `alphaBand`, the newly created alpha channel will be set to 0 (transparent), all other pixel values will result in alpha 255 (opaque)
+
 #### Renderer
 
 **Raster data rendered using Plotty**: `L.LeafletGeotiff.plotty(options)`
