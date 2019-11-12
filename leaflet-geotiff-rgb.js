@@ -19,25 +19,30 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
     render: function(raster, canvas, ctx, args) {
         var rasterImageData = ctx.createImageData(raster.width, raster.height);
         var isGrayscale = raster.data.length < 3;
-        var maxVal = 255;
-        for(let i=0; i<raster.data.length; i++){
-            // get max value per band
-            /*// first return sorted array of unique values that are not NaN
-            let srt = raster.data[i].filter(function(v, index, self){return (!isNaN(v) && self.indexOf(v)===index);}).sort();
-            */
-            //  first return sorted array of values that are not NaN
-            let srt = raster.data[i].filter(function(v, index, self){return !isNaN(v);}).sort();
-            let cMax = srt[srt.length-1];
-            if(this.options.cutoffBrightest && this.options.cutoffBrightest > 0 && this.options.cutoffBrightest < 1){
-                cMax = srt[srt.length-1-Math.round(srt.length*this.options.cutoffBrightest)]
+        // compute max band max value if not set yet
+        if(!this.options.bandMaxVal){
+            let maxVal = 0;
+            for(let i=0; i<raster.data.length; i++){
+                // get max value per band
+                /*// first return sorted array of unique values that are not NaN
+                let srt = raster.data[i].filter(function(v, index, self){return (!isNaN(v) && self.indexOf(v)===index);}).sort();
+                */
+                //  first return sorted array of values that are not NaN
+                let srt = raster.data[i].filter(function(v, index, self){return !isNaN(v);}).sort();
+                let cMax = srt[srt.length-1];
+                if(this.options.cutoffBrightest && this.options.cutoffBrightest > 0 && this.options.cutoffBrightest < 1){
+                    cMax = srt[srt.length-1-Math.round(srt.length*this.options.cutoffBrightest)]
+                }
+                if(cMax>maxVal){
+                    maxVal=cMax;
+                }
+                console.log("min value for band" + i + ": " + srt[0] + ", max value for band" + i + ": " + srt[srt.length-1]);
+                this.options.bandMaxVal = maxVal;
             }
-            if(cMax>maxVal){
-                maxVal=cMax;
-            }
-            console.log("min value for band" + i + ": " + srt[0] + ", max value for band" + i + ": " + srt[srt.length-1]);
         }
+        var scaleMax = this.options.bandMaxVal>0?this.options.bandMaxVal:255;
         function scale(val){
-            return(Math.round(((val/maxVal)*255)));
+            return(Math.round(((val/scaleMax)*255)));
         }
         for (let i = 0, j = 0; i < rasterImageData.data.length; i += 4, j += 1) {            
             rasterImageData.data[i] = scale(raster.data[0][j]); // R value
