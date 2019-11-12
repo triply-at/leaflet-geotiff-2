@@ -6,7 +6,13 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
-    initialize: function() {
+
+    options: {
+        cutoffBrightest: 0
+    },
+
+    initialize: function(options) {
+        L.setOptions(this, options);
         this.name = 'Canvas Renderer';
     },
 
@@ -21,13 +27,17 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
             */
             //  first return sorted array of values that are not NaN
             let srt = raster.data[i].filter(function(v, index, self){return !isNaN(v);}).sort();
-            if(srt[srt.length-1]>maxVal){
-                maxVal=srt[srt.length-1];
+            let cMax = srt[srt.length-1];
+            if(this.options.cutoffBrightest && this.options.cutoffBrightest > 0 && this.options.cutoffBrightest < 1){
+                cMax = srt[srt.length-1-Math.round(srt.length*this.options.cutoffBrightest)]
+            }
+            if(cMax>maxVal){
+                maxVal=cMax;
             }
             console.log("min value for band" + i + ": " + srt[0] + ", max value for band" + i + ": " + srt[srt.length-1]);
         }
         function scale(val){
-            return(Math.round((val/maxVal*255)));
+            return(Math.round(((val/maxVal)*255)));
         }
         for (let i = 0, j = 0; i < rasterImageData.data.length; i += 4, j += 1) {            
             rasterImageData.data[i] = scale(raster.data[0][j]); // R value
