@@ -68,7 +68,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     gBand: 1,
     bBand: 2,
     alphaBand: 0, // band to use for (generating) alpha channel
-    transpValue: 0 // original band value to interpret as transparent
+    transpValue: 0, // original band value to interpret as transparent
+    pane: "overlayPane"
   },
 
   initialize: function(url, options) {
@@ -99,7 +100,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       this._initImage();
     }
 
-    map._panes.overlayPane.appendChild(this._image);
+    map._panes[this.options.pane].appendChild(this._image);
 
     map.on("moveend", this._reset, this);
 
@@ -110,7 +111,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     this._reset();
   },
   onRemove: function(map) {
-    map.getPanes().overlayPane.removeChild(this._image);
+    map.getPanes()[this.options.pane].removeChild(this._image);
 
     map.off("moveend", this._reset, this);
 
@@ -227,12 +228,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   _reset: function() {
     if (this.hasOwnProperty("_map") && this._map) {
       if (this._rasterBounds) {
-        (topLeft = this._map.latLngToLayerPoint(
-          this._map.getBounds().getNorthWest()
-        )),
-          (size = this._map
+        var topLeft = this._map.latLngToLayerPoint(
+            this._map.getBounds().getNorthWest()
+          ),
+          size = this._map
             .latLngToLayerPoint(this._map.getBounds().getSouthEast())
-            ._subtract(topLeft));
+            ._subtract(topLeft);
 
         L.DomUtil.setPosition(this._image, topLeft);
         this._image.style.width = size.x + "px";
@@ -276,12 +277,13 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   _drawImage: function() {
     if (this.raster.hasOwnProperty("data")) {
       var args = {};
-      (topLeft = this._map.latLngToLayerPoint(
+      var topLeft = this._map.latLngToLayerPoint(
         this._map.getBounds().getNorthWest()
-      )),
-        (size = this._map
-          .latLngToLayerPoint(this._map.getBounds().getSouthEast())
-          ._subtract(topLeft));
+      );
+      var size = this._map
+        .latLngToLayerPoint(this._map.getBounds().getSouthEast())
+        ._subtract(topLeft);
+
       args.rasterPixelBounds = L.bounds(
         this._map.latLngToContainerPoint(this._rasterBounds.getNorthWest()),
         this._map.latLngToContainerPoint(this._rasterBounds.getSouthEast())
