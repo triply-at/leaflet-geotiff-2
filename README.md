@@ -36,6 +36,7 @@ Parameters:
   - `image` - (optional, default = 0) geoTIFF image to read.
   - `clip` - (optional, default = undefined) Clipping polygon, provided as an array of [lat,lon] coordinates. Note that this is the Leaflet [lat,lon] convention, not geoJSON [lon,lat].
   - `renderer` - Renderer to use (see below).
+  - `pane` - (optional, default = overlayPane) leaflet pane to add the layer.
 
 Extended parameters for use with `L.LeafletGeotiff.rgb()` renderer:
 
