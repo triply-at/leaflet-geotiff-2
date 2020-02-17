@@ -137,7 +137,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       let x_max;
       let y_min;
       let y_max;
-      console.log("Using ModelTiepoint...", meta);
+      // console.log("Using ModelTiepoint...", meta);
       try {
         x_min = meta.ModelTiepoint[3];
         x_max = x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
@@ -208,8 +208,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
             (this._rasterBounds._northEast.lat -
               this._rasterBounds._southWest.lat)
         );
+
       var i = y * this.raster.width + x;
-      return this.raster.data[i];
+      return this.raster.data[0][i];
     } catch (err) {
       return undefined;
     }

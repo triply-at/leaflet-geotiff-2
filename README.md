@@ -75,10 +75,11 @@ const renderer = L.LeafletGeotiff.plotty(options);
 
 Methods
 
-| method            | params                           | description                |
-| ----------------- | -------------------------------- | -------------------------- |
-| `setColorScale`   | (`colorScale: {String}`)         | change layer color scale   |
-| `setDisplayRange` | (`min: {Number}, max: {Number}`) | change layer display range |
+| method            | params                                       | description             |
+| ----------------- | -------------------------------------------- | ----------------------- |
+| `setColorScale`   | (`colorScale: {String}`)                     | set layer color scale   |
+| `setDisplayRange` | (`min: {Number}, max: {Number}`)             | set layer display range |
+| `setClamps`       | (`clampLow: {Boolean}, clampLow: {Boolean}`) | set layer clamp options |
 
 New color scales can be created using [plotty's](https://github.com/santilland/plotty) `addColorScale` method.
 
@@ -133,8 +134,10 @@ const renderer = L.LeafletGeotiff.vectorArrows(options);
 
 ## Advanced usage options
 
-1. Data values can be extracted using the `getValueAtLatLng(lat,lng)` method.
+1. Data values can be extracted using the `getValueAtLatLng(lat,lng)` method\*
 2. Custom renderer can be implemented by extending `L.LeafletGeotiffRenderer`.
+
+\*note this seems buggy, experimental only (returns values when given postion outside of data domain).
 
 ## Build
 

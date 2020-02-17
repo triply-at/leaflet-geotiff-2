@@ -135,8 +135,7 @@
         var x_min;
         var x_max;
         var y_min;
-        var y_max;
-        console.log("Using ModelTiepoint...", meta);
+        var y_max; // console.log("Using ModelTiepoint...", meta);
 
         try {
           x_min = meta.ModelTiepoint[3];
@@ -194,7 +193,7 @@
         var x = Math.floor(this.raster.width * (lng - this._rasterBounds._southWest.lng) / (this._rasterBounds._northEast.lng - this._rasterBounds._southWest.lng));
         var y = this.raster.height - Math.ceil(this.raster.height * (lat - this._rasterBounds._southWest.lat) / (this._rasterBounds._northEast.lat - this._rasterBounds._southWest.lat));
         var i = y * this.raster.width + x;
-        return this.raster.data[i];
+        return this.raster.data[0][i];
       } catch (err) {
         return undefined;
       }

@@ -34,6 +34,12 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     this.parent._reset();
   },
 
+  setClamps: function(clampLow, clampHigh) {
+    this.options.clampLow = clampLow;
+    this.options.clampHigh = clampHigh;
+    this.parent._reset();
+  },
+
   _preLoadColorScale: function() {
     var canvas = document.createElement("canvas");
     var plot = new plotty.plot({

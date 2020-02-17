@@ -36,6 +36,12 @@
 
       this.parent._reset();
     },
+    setClamps: function setClamps(clampLow, clampHigh) {
+      this.options.clampLow = clampLow;
+      this.options.clampHigh = clampHigh;
+
+      this.parent._reset();
+    },
     _preLoadColorScale: function _preLoadColorScale() {
       var canvas = document.createElement("canvas");
       var plot = new plotty.plot({

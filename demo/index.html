@@ -6,23 +6,62 @@
   </head>
   <body>
     <div id="map"></div>
-    <div id="time"></div>
 
     <div id="controls">
-      <h2>Leaflet GeoTIFF</h2>
+      <h2>Leaflet GeoTIFF (plotty example)</h2>
 
-      <div class="slidecontainer">
-        <p>Keyframes:</p>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value="0"
-          class="slider"
-          id="keyFrameSlider"
-        />
-      </div>
-    </div>
+      <form>
+        <p>
+          <label>displayMin:
+            <input type="number" id="displayMin" value="0" />
+          </label>
+          <label>displayMax:
+            <input type="number" id="displayMax" value="10" />
+          </label>
+        </p>
+        <p>
+          <label>clampMin:
+            <input type="checkbox" id="clampLow" />
+          </label>
+          <label>clampMax:
+            <input type="checkbox" id="clampHigh" />
+          </label>
+        </p>
+        <p>
+          <label>
+            colorScale:
+            <select id="colorScale">
+              <option>viridis</option>
+              <option>inferno</option>
+              <option>turbo</option>
+              <option>rainbow</option>
+              <option>jet</option>
+              <option>hsv</option>
+              <option>hot</option>
+              <option>cool</option>
+              <option>spring</option>
+              <option>summer</option>
+              <option>winter</option>
+              <option>autumn</option>
+              <option>bone</option>
+              <option>copper</option>
+              <option>greys</option>
+              <option>yignbu</option>
+              <option>greens</option>
+              <option>yiorrd</option>
+              <option>bluered</option>
+              <option>rdbu</option>
+              <option>picnic</option>
+              <option>portland</option>
+              <option>blackbody</option>
+              <option>earth</option>
+              <option>electric</option>
+              <option>magma</option>
+              <option>plasma</option>
+            </select>
+          </label>
+        </p>
+      </form>
 
     <!--leaflet-->
     <link
