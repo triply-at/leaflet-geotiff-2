@@ -58,7 +58,7 @@ Methods - L.leafletGeotiff
 | `getBounds`        |                                  | get leaflet LatLngBounds of the layer |
 | `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get leaflet raster value at a point\* |
 
-\*note this seems buggy, experimental only (returns values when given postion outside of data domain).
+\*note this [has problems](https://github.com/danwild/leaflet-geotiff-2/issues/1).
 
 ---
 
