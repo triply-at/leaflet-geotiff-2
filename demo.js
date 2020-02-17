@@ -6,11 +6,10 @@ $(document).ready(function() {
   ).addTo(map);
 
   const windSpeedUrl =
-    "https://stuartmatthews.github.io/leaflet-geotiff/tif/wind_speed.tif";
-  // "https://github.com/danwild/leaflet-geotiff-2/raw/master/demo/wind_speed.tif";
+    "https://danwild.github.io/leaflet-geotiff-2/wind_speed.tif";
 
   const windDirUrl =
-    "https://github.com/danwild/leaflet-geotiff-2/raw/master/demo/wind_direction.tif";
+    "https://danwild.github.io/leaflet-geotiff-2/wind_direction.tif";
 
   const renderer = L.LeafletGeotiff.plotty({
     displayMin: 0,
