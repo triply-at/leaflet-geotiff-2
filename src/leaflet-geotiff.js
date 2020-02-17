@@ -62,7 +62,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     bBand: 2,
     alphaBand: 0, // band to use for (generating) alpha channel
     transpValue: 0, // original band value to interpret as transparent
-    pane: "overlayPane"
+    pane: "overlayPane",
+    onError: null
   },
 
   initialize(url, options) {
@@ -124,7 +125,11 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         self._parseTIFF(this.response);
-      } //TODO else handle error
+      } else if (self.options.onError) {
+        self.options.onError(this.response);
+      } else {
+        console.error(`Failed to load ${self._url}`, this.response);
+      }
     };
     request.open("GET", this._url, true);
     request.responseType = "arraybuffer";
@@ -146,24 +151,16 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         this.y_min = meta.ModelTiepoint[4];
         this.y_max = this.y_min - meta.ModelPixelScale[1] * meta.ImageLength;
       } catch (e) {
-        console.error(
+        console.debug(
           "No bounds supplied, and no ModelTiepoint found in metadata."
         );
+        if (self.options.onError) self.options.onError(e);
       }
 
       self._rasterBounds = L.latLngBounds([
         [this.y_min, this.x_min],
         [this.y_max, this.x_max]
       ]);
-      console.log(
-        "bounds:",
-        this.x_min,
-        this.x_max,
-        this.y_min,
-        this.y_max,
-        "meta:",
-        meta
-      );
       self._reset();
     }
   },

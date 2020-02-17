@@ -42,7 +42,9 @@ const options = {
   // Note that this is the Leaflet [lat,lon] convention, not geoJSON [lon,lat].
   clip: undefined,
   // Optional leaflet pane to add the layer.
-  pane: "overlayPane"
+  pane: "overlayPane",
+  // Optional callback to handle failed URL request or parsing of tif
+  onError: null
 };
 
 // create layer
@@ -80,7 +82,7 @@ const options = {
 const renderer = L.LeafletGeotiff.plotty(options);
 ```
 
-Methods
+Methods - leafletGeotiff.plotty
 
 | method                | params                                       | description                                                    |
 | --------------------- | -------------------------------------------- | -------------------------------------------------------------- |

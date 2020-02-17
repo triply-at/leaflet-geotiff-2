@@ -57,7 +57,8 @@
       // band to use for (generating) alpha channel
       transpValue: 0,
       // original band value to interpret as transparent
-      pane: "overlayPane"
+      pane: "overlayPane",
+      onError: null
     },
     initialize: function initialize(url, options) {
       if (typeof GeoTIFF === "undefined") {
@@ -119,8 +120,11 @@
       request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
           self._parseTIFF(this.response);
-        } //TODO else handle error
-
+        } else if (self.options.onError) {
+          self.options.onError(this.response);
+        } else {
+          console.error("Failed to load ".concat(self._url), this.response);
+        }
       };
 
       request.open("GET", this._url, true);
