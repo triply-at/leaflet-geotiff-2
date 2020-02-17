@@ -148,7 +148,7 @@ npm run build
 
 This repo is an attempt to pull together a bunch of community-driven improvements that
 have been made in various forks of `leaflet-geotiff` over the years but have failed to
-make it back into the `leaflet-geotiff` npm package.
+make it back into the `leaflet-geotiff` npm package, and to provide a place for active development for new features.
 
 ## Dependencies
 
