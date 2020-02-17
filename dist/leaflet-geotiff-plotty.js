@@ -42,6 +42,25 @@
 
       this.parent._reset();
     },
+    getColorbarOptions: function getColorbarOptions() {
+      return Object.keys(plotty.colorscales);
+    },
+    getColourbarDataUrl: function getColourbarDataUrl(paletteName) {
+      var canvas = document.createElement("canvas");
+      var plot = new plotty.plot({
+        canvas: canvas,
+        data: [0],
+        width: 1,
+        height: 1,
+        domain: [0, 1],
+        colorScale: paletteName,
+        clampLow: true,
+        clampHigh: true
+      });
+      dataUrl = plot.colorScaleCanvas.toDataURL();
+      canvas.remove();
+      return dataUrl;
+    },
     _preLoadColorScale: function _preLoadColorScale() {
       var canvas = document.createElement("canvas");
       var plot = new plotty.plot({

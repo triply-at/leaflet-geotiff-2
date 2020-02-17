@@ -49,6 +49,15 @@ const options = {
 var layer = L.leafletGeotiff(url, options).addTo(map);
 ```
 
+Methods - L.leafletGeotiff
+
+| method             | params                           | description                           |
+| ------------------ | -------------------------------- | ------------------------------------- |
+| `getBounds`        |                                  | get leaflet LatLngBounds of the layer |
+| `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get leaflet raster value at a point\* |
+
+\*note this seems buggy, experimental only (returns values when given postion outside of data domain).
+
 ---
 
 ## Renderer - Plotty
@@ -73,11 +82,13 @@ const renderer = L.LeafletGeotiff.plotty(options);
 
 Methods
 
-| method            | params                                       | description             |
-| ----------------- | -------------------------------------------- | ----------------------- |
-| `setColorScale`   | (`colorScale: {String}`)                     | set layer color scale   |
-| `setDisplayRange` | (`min: {Number}, max: {Number}`)             | set layer display range |
-| `setClamps`       | (`clampLow: {Boolean}, clampLow: {Boolean}`) | set layer clamp options |
+| method                | params                                       | description                                                    |
+| --------------------- | -------------------------------------------- | -------------------------------------------------------------- |
+| `setColorScale`       | (`colorScale: {String}`)                     | set layer color scale                                          |
+| `setDisplayRange`     | (`min: {Number}, max: {Number}`)             | set layer display range                                        |
+| `setClamps`           | (`clampLow: {Boolean}, clampLow: {Boolean}`) | set layer clamp options                                        |
+| `getColourbarDataUrl` | (`paletteName: {String}`)                    | get a data URI for a color palette (e.g. to display colorbar). |
+| `getColorbarOptions`  |                                              | get list of available color palettes                           |
 
 New color scales can be created using [plotty's](https://github.com/santilland/plotty) `addColorScale` method.
 
@@ -132,10 +143,7 @@ const renderer = L.LeafletGeotiff.vectorArrows(options);
 
 ## Advanced usage options
 
-1. Data values can be extracted using the `getValueAtLatLng(lat,lng)` method\*
-2. Custom renderer can be implemented by extending `L.LeafletGeotiffRenderer`.
-
-\*note this seems buggy, experimental only (returns values when given postion outside of data domain).
+1. Custom renderer can be implemented by extending `L.LeafletGeotiffRenderer`.
 
 ## Build
 

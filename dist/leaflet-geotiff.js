@@ -66,6 +66,10 @@
 
       this._url = url;
       this.raster = {};
+      this.x_min = null;
+      this.x_max = null;
+      this.y_min = null;
+      this.y_max = null;
       L.Util.setOptions(this, options);
 
       if (this.options.bounds) {
@@ -131,27 +135,19 @@
 
       if (!self.options.bounds) {
         var image = self.tiff.getImage(self.options.image);
-        var meta = image.getFileDirectory();
-        var x_min;
-        var x_max;
-        var y_min;
-        var y_max; // console.log("Using ModelTiepoint...", meta);
+        var meta = image.getFileDirectory(); // console.log("Using ModelTiepoint...", meta);
 
         try {
-          x_min = meta.ModelTiepoint[3];
-          x_max = x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
-          y_min = meta.ModelTiepoint[4];
-          y_max = y_min - meta.ModelPixelScale[1] * meta.ImageLength;
+          this.x_min = meta.ModelTiepoint[3];
+          this.x_max = this.x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
+          this.y_min = meta.ModelTiepoint[4];
+          this.y_max = this.y_min - meta.ModelPixelScale[1] * meta.ImageLength;
         } catch (e) {
-          console.warn("No bounds supplied, and no ModelTiepoint found in metadata, falling back to world");
-          x_min = -180;
-          x_max = 180;
-          y_min = -90;
-          y_max = 90;
+          console.error("No bounds supplied, and no ModelTiepoint found in metadata.");
         }
 
-        self._rasterBounds = L.latLngBounds([[y_min, x_min], [y_max, x_max]]);
-        console.log("bounds:", x_min, x_max, y_min, y_max, "meta:", meta);
+        self._rasterBounds = L.latLngBounds([[this.y_min, this.x_min], [this.y_max, this.x_max]]);
+        console.log("bounds:", this.x_min, this.x_max, this.y_min, this.y_max, "meta:", meta);
 
         self._reset();
       }
@@ -187,6 +183,9 @@
     },
     getRasterRows: function getRasterRows() {
       return this.raster.height;
+    },
+    getBounds: function getBounds() {
+      return this._rasterBounds;
     },
     getValueAtLatLng: function getValueAtLatLng(lat, lng) {
       try {

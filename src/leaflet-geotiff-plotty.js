@@ -40,6 +40,27 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     this.parent._reset();
   },
 
+  getColorbarOptions() {
+    return Object.keys(plotty.colorscales);
+  },
+
+  getColourbarDataUrl(paletteName) {
+    const canvas = document.createElement("canvas");
+    const plot = new plotty.plot({
+      canvas,
+      data: [0],
+      width: 1,
+      height: 1,
+      domain: [0, 1],
+      colorScale: paletteName,
+      clampLow: true,
+      clampHigh: true
+    });
+    dataUrl = plot.colorScaleCanvas.toDataURL();
+    canvas.remove();
+    return dataUrl;
+  },
+
   _preLoadColorScale: function() {
     var canvas = document.createElement("canvas");
     var plot = new plotty.plot({

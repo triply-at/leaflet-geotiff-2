@@ -65,13 +65,19 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     pane: "overlayPane"
   },
 
-  initialize: function(url, options) {
+  initialize(url, options) {
     if (typeof GeoTIFF === "undefined") {
       throw new Error("GeoTIFF not defined");
     }
 
     this._url = url;
     this.raster = {};
+
+    this.x_min = null;
+    this.x_max = null;
+    this.y_min = null;
+    this.y_max = null;
+
     L.Util.setOptions(this, options);
 
     if (this.options.bounds) {
@@ -83,11 +89,11 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
     this._getData();
   },
-  setURL: function(newURL) {
+  setURL(newURL) {
     this._url = newURL;
     this._getData();
   },
-  onAdd: function(map) {
+  onAdd(map) {
     this._map = map;
     if (!this._image) {
       this._initImage();
@@ -103,7 +109,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
     this._reset();
   },
-  onRemove: function(map) {
+  onRemove(map) {
     map.getPanes()[this.options.pane].removeChild(this._image);
 
     map.off("moveend", this._reset, this);
@@ -112,7 +118,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       map.off("zoomanim", this._animateZoom, this);
     }
   },
-  _getData: function() {
+  _getData() {
     var self = this;
     var request = new XMLHttpRequest();
     request.onload = function() {
@@ -124,7 +130,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     request.responseType = "arraybuffer";
     request.send();
   },
-  _parseTIFF: function(arrayBuffer) {
+  _parseTIFF(arrayBuffer) {
     var self = this;
     let tiff = GeoTIFF.parse(arrayBuffer);
     self.tiff = tiff;
@@ -133,35 +139,35 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       var image = self.tiff.getImage(self.options.image);
       var meta = image.getFileDirectory();
 
-      let x_min;
-      let x_max;
-      let y_min;
-      let y_max;
       // console.log("Using ModelTiepoint...", meta);
       try {
-        x_min = meta.ModelTiepoint[3];
-        x_max = x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
-        y_min = meta.ModelTiepoint[4];
-        y_max = y_min - meta.ModelPixelScale[1] * meta.ImageLength;
+        this.x_min = meta.ModelTiepoint[3];
+        this.x_max = this.x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
+        this.y_min = meta.ModelTiepoint[4];
+        this.y_max = this.y_min - meta.ModelPixelScale[1] * meta.ImageLength;
       } catch (e) {
-        console.warn(
-          "No bounds supplied, and no ModelTiepoint found in metadata, falling back to world"
+        console.error(
+          "No bounds supplied, and no ModelTiepoint found in metadata."
         );
-        x_min = -180;
-        x_max = 180;
-        y_min = -90;
-        y_max = 90;
       }
 
       self._rasterBounds = L.latLngBounds([
-        [y_min, x_min],
-        [y_max, x_max]
+        [this.y_min, this.x_min],
+        [this.y_max, this.x_max]
       ]);
-      console.log("bounds:", x_min, x_max, y_min, y_max, "meta:", meta);
+      console.log(
+        "bounds:",
+        this.x_min,
+        this.x_max,
+        this.y_min,
+        this.y_max,
+        "meta:",
+        meta
+      );
       self._reset();
     }
   },
-  setBand: function(band) {
+  setBand(band) {
     var self = this;
     self.options.band = band;
 
@@ -185,16 +191,19 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     console.log("image", image, "data", data, "raster", self.raster.data);
     self._reset();
   },
-  getRasterArray: function() {
+  getRasterArray() {
     return this.raster.data;
   },
-  getRasterCols: function() {
+  getRasterCols() {
     return this.raster.width;
   },
-  getRasterRows: function() {
+  getRasterRows() {
     return this.raster.height;
   },
-  getValueAtLatLng: function(lat, lng) {
+  getBounds() {
+    return this._rasterBounds;
+  },
+  getValueAtLatLng(lat, lng) {
     try {
       var x = Math.floor(
         (this.raster.width * (lng - this._rasterBounds._southWest.lng)) /
@@ -215,7 +224,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       return undefined;
     }
   },
-  _animateZoom: function(e) {
+  _animateZoom(e) {
     if (L.version >= "1.0") {
       var scale = this._map.getZoomScale(e.zoom),
         offset = this._map._latLngBoundsToNewLayerBounds(
@@ -236,7 +245,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         L.DomUtil.getTranslateString(topLeft) + " scale(" + scale + ") ";
     }
   },
-  _reset: function() {
+  _reset() {
     if (this.hasOwnProperty("_map") && this._map) {
       if (this._rasterBounds) {
         var topLeft = this._map.latLngToLayerPoint(
@@ -254,12 +263,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       }
     }
   },
-  setClip: function(clipLatLngs) {
+  setClip(clipLatLngs) {
     this.options.clip = clipLatLngs;
     this._reset();
   },
 
-  _getPixelByLatLng: function(latLng) {
+  _getPixelByLatLng(latLng) {
     var topLeft = this._map.latLngToLayerPoint(
       this._map.getBounds().getNorthWest()
     );
@@ -267,7 +276,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     return L.point(mercPoint.x - topLeft.x, mercPoint.y - topLeft.y);
   },
 
-  _clipMaskToPixelPoints: function(i) {
+  _clipMaskToPixelPoints(i) {
     if (this.options.clip) {
       var topLeft = this._map.latLngToLayerPoint(
         this._map.getBounds().getNorthWest()
@@ -285,7 +294,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     }
   },
 
-  _drawImage: function() {
+  _drawImage() {
     if (this.raster.hasOwnProperty("data")) {
       var args = {};
       var topLeft = this._map.latLngToLayerPoint(
@@ -352,7 +361,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     }
   },
 
-  createSubmask: function(size, args, clip) {
+  createSubmask(size, args, clip) {
     var canvas = document.createElement("canvas");
     canvas.width = size.x;
     canvas.height = size.y;
@@ -374,7 +383,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     return canvas;
   },
 
-  createMask: function(size, args) {
+  createMask(size, args) {
     var canvas = document.createElement("canvas");
     canvas.width = size.x;
     canvas.height = size.y;
@@ -393,7 +402,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     return canvas;
   },
 
-  transform: function(rasterImageData, args) {
+  transform(rasterImageData, args) {
     //Create image data and Uint32 views of data to speed up copying
     var imageData = new ImageData(args.plotWidth, args.plotHeight);
     var outData = imageData.data;
@@ -450,15 +459,15 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 });
 
 L.LeafletGeotiffRenderer = L.Class.extend({
-  initialize: function(options) {
+  initialize(options) {
     L.setOptions(this, options);
   },
 
-  setParent: function(parent) {
+  setParent(parent) {
     this.parent = parent;
   },
 
-  render: function(raster, canvas, ctx, args) {
+  render(raster, canvas, ctx, args) {
     throw new Error("Abstract class");
   }
 });
