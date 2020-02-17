@@ -147,11 +147,11 @@
           this.y_min = meta.ModelTiepoint[4];
           this.y_max = this.y_min - meta.ModelPixelScale[1] * meta.ImageLength;
         } catch (e) {
-          console.error("No bounds supplied, and no ModelTiepoint found in metadata.");
+          console.debug("No bounds supplied, and no ModelTiepoint found in metadata.");
+          if (self.options.onError) self.options.onError(e);
         }
 
         self._rasterBounds = L.latLngBounds([[this.y_min, this.x_min], [this.y_max, this.x_max]]);
-        console.log("bounds:", this.x_min, this.x_max, this.y_min, this.y_max, "meta:", meta);
 
         self._reset();
       }
