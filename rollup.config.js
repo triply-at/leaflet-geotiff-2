@@ -1,16 +1,48 @@
 import babel from "rollup-plugin-babel";
-import multiInput from "rollup-plugin-multi-input";
+// import resolve from "@rollup/plugin-node-resolve";
 
-const config = {
-  input: ["src/*.js"],
-  output: [
-    {
-      dir: "dist",
-      format: "esm"
-    }
-  ],
-  plugins: [babel(), multiInput()],
-  external: ["plotty"]
-};
+const moduleFormat = "umd";
 
-export default config;
+export default [
+  {
+    input: "src/leaflet-geotiff.js",
+    output: [
+      {
+        dir: "dist",
+        format: moduleFormat
+      }
+    ],
+    plugins: [babel({ exclude: "node_modules/**" })]
+  },
+  {
+    input: "src/leaflet-geotiff-plotty.js",
+    output: [
+      {
+        dir: "dist",
+        format: moduleFormat
+      }
+    ],
+    plugins: [babel({ exclude: "node_modules/**" })],
+    external: ["plotty"]
+  },
+  {
+    input: "src/leaflet-geotiff-rgb.js",
+    output: [
+      {
+        dir: "dist",
+        format: moduleFormat
+      }
+    ],
+    plugins: [babel({ exclude: "node_modules/**" })]
+  },
+  {
+    input: "src/leaflet-geotiff-vector-arrows.js",
+    output: [
+      {
+        dir: "dist",
+        format: moduleFormat
+      }
+    ],
+    plugins: [babel({ exclude: "node_modules/**" })]
+  }
+];

@@ -75,12 +75,12 @@ const renderer = L.LeafletGeotiff.plotty(options);
 
 Methods
 
-| method            | params                         | description                |
-| ----------------- | ------------------------------ | -------------------------- |
-| `setColorScale`   | `colorScale: {String}`         | change layer color scale   |
-| `setDisplayRange` | `min: {Number}, max: {Number}` | change layer display range |
+| method            | params                           | description                |
+| ----------------- | -------------------------------- | -------------------------- |
+| `setColorScale`   | (`colorScale: {String}`)         | change layer color scale   |
+| `setDisplayRange` | (`min: {Number}, max: {Number}`) | change layer display range |
 
-New color scales can be created using plotty's `addColorScale` method.
+New color scales can be created using [plotty's](https://github.com/santilland/plotty) `addColorScale` method.
 
 ---
 
@@ -148,8 +148,6 @@ npm run build
 This repo is an attempt to pull together a bunch of community-driven improvements that
 have been made in various forks of `leaflet-geotiff` over the years but have failed to
 make it back into the `leaflet-geotiff` npm package.
-
-Also; note the UMD module defs have been removed in favour of ES modules.
 
 ## Dependencies
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet GeoTIFF</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="time"></div>
+
+    <div id="controls">
+      <h2>Leaflet GeoTIFF</h2>
+
+      <div class="slidecontainer">
+        <p>Keyframes:</p>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          class="slider"
+          id="keyFrameSlider"
+        />
+      </div>
+    </div>
+
+    <!--leaflet-->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+
+    <!--deps-->
+    <script src="https://unpkg.com/geotiff@0.4.1/dist/geotiff.browserify.js"></script>
+    <script src="https://unpkg.com/plotty/dist/plotty.js"></script>
+
+    <!--the plugin-->
+    <script src="../dist/leaflet-geotiff.js"></script>
+    <script src="../dist/leaflet-geotiff-plotty.js"></script>
+
+    <!--demo stuff-->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="demo.css" />
+    <script src="demo.js"></script>
+  </body>
+</html>
