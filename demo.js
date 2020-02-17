@@ -8,18 +8,25 @@ $(document).ready(function() {
   const windSpeedUrl =
     "https://danwild.github.io/leaflet-geotiff-2/wind_speed.tif";
 
-  const windDirUrl =
-    "https://danwild.github.io/leaflet-geotiff-2/wind_direction.tif";
-
-  const renderer = L.LeafletGeotiff.plotty({
+  const plottyRenderer = L.LeafletGeotiff.plotty({
     displayMin: 0,
     displayMax: 10,
     clampLow: false,
     clampHigh: false
   });
-  var windSpeedLayer = L.leafletGeotiff(windSpeedUrl, {
-    renderer: renderer
+  const windSpeedLayer = L.leafletGeotiff(windSpeedUrl, {
+    renderer: plottyRenderer
   }).addTo(map);
+
+  // VECTOR ARROW EG
+  // const windDirUrl =
+  //   "https://danwild.github.io/leaflet-geotiff-2/wind_direction.tif";
+  // const arrowRenderer = L.LeafletGeotiff.vectorArrows({
+  //   arrowSize: 20
+  // });
+  // const windDirLayer = L.leafletGeotiff(windDirUrl, {
+  //   renderer: arrowRenderer
+  // }).addTo(map);
 
   $("#displayMin").on("change", event => {
     windSpeedLayer.options.renderer.setDisplayRange(
