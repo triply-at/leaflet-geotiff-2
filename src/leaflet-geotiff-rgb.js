@@ -1,10 +1,6 @@
 // Depends on:
 // https://github.com/santilland/plotty
 
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  var L = require("leaflet-geotiff");
-}
-
 L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
   options: {
     cutoffBrightest: 0
@@ -90,7 +86,3 @@ L.LeafletGeotiff.RGB = L.LeafletGeotiffRenderer.extend({
 L.LeafletGeotiff.rgb = function(options) {
   return new L.LeafletGeotiff.RGB(options);
 };
-
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  module.exports = L.LeafletGeotiff;
-}

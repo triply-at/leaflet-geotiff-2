@@ -1,7 +1,3 @@
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  var L = require("leaflet-geotiff");
-}
-
 L.LeafletGeotiff.VectorArrows = L.LeafletGeotiffRenderer.extend({
   options: {
     arrowSize: 20
@@ -63,7 +59,3 @@ L.LeafletGeotiff.VectorArrows = L.LeafletGeotiffRenderer.extend({
 L.LeafletGeotiff.vectorArrows = function(options) {
   return new L.LeafletGeotiff.VectorArrows(options);
 };
-
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  module.exports = L.LeafletGeotiff;
-}

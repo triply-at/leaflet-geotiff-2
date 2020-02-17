@@ -7,56 +7,49 @@
 
 // Note this will only work with ESPG:4326 tiffs
 
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  var L = require("leaflet");
-  var GeoTIFF = require("geotiff");
-}
+try {
+  new window.ImageData(new Uint8ClampedArray([0, 0, 0, 0]), 1, 1);
+} catch (e) {
+  var ImageDataPolyfill = function ImageDataPolyfill() {
+    var args = [].concat(Array.prototype.slice.call(arguments)),
+      data = void 0;
 
-(function() {
-  try {
-    new window.ImageData(new Uint8ClampedArray([0, 0, 0, 0]), 1, 1);
-  } catch (e) {
-    var ImageDataPolyfill = function ImageDataPolyfill() {
-      var args = [].concat(Array.prototype.slice.call(arguments)),
-        data = void 0;
+    if (args.length < 2) {
+      throw new TypeError(
+        'Failed to construct "ImageData": 2 arguments required, but only ' +
+          args.length +
+          " present."
+      );
+    }
 
-      if (args.length < 2) {
+    if (args.length > 2) {
+      data = args.shift();
+
+      if (!(data instanceof Uint8ClampedArray)) {
         throw new TypeError(
-          'Failed to construct "ImageData": 2 arguments required, but only ' +
-            args.length +
-            " present."
+          'Failed to construct "ImageData": parameter 1 is not of type "Uint8ClampedArray"'
         );
       }
 
-      if (args.length > 2) {
-        data = args.shift();
-
-        if (!(data instanceof Uint8ClampedArray)) {
-          throw new TypeError(
-            'Failed to construct "ImageData": parameter 1 is not of type "Uint8ClampedArray"'
-          );
-        }
-
-        if (data.length !== 4 * args[0] * args[1]) {
-          throw new Error(
-            'Failed to construct "ImageData": The input data byte length is not a multiple of (4 * width * height)'
-          );
-        }
+      if (data.length !== 4 * args[0] * args[1]) {
+        throw new Error(
+          'Failed to construct "ImageData": The input data byte length is not a multiple of (4 * width * height)'
+        );
       }
+    }
 
-      var width = args[0],
-        height = args[1],
-        canvas = document.createElement("canvas"),
-        ctx = canvas.getContext("2d"),
-        imageData = ctx.createImageData(width, height);
+    var width = args[0],
+      height = args[1],
+      canvas = document.createElement("canvas"),
+      ctx = canvas.getContext("2d"),
+      imageData = ctx.createImageData(width, height);
 
-      if (data) imageData.data.set(data);
-      return imageData;
-    };
+    if (data) imageData.data.set(data);
+    return imageData;
+  };
 
-    window.ImageData = ImageDataPolyfill;
-  }
-})();
+  window.ImageData = ImageDataPolyfill;
+}
 
 L.LeafletGeotiff = L.ImageOverlay.extend({
   options: {
@@ -139,10 +132,27 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     if (!self.options.bounds) {
       var image = self.tiff.getImage(self.options.image);
       var meta = image.getFileDirectory();
-      var x_min = meta.ModelTiepoint[3];
-      var x_max = x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
-      var y_min = meta.ModelTiepoint[4];
-      var y_max = y_min - meta.ModelPixelScale[1] * meta.ImageLength;
+
+      let x_min;
+      let x_max;
+      let y_min;
+      let y_max;
+      console.log("Using ModelTiepoint...", meta);
+      try {
+        x_min = meta.ModelTiepoint[3];
+        x_max = x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
+        y_min = meta.ModelTiepoint[4];
+        y_max = y_min - meta.ModelPixelScale[1] * meta.ImageLength;
+      } catch (e) {
+        console.warn(
+          "No bounds supplied, and no ModelTiepoint found in metadata, falling back to world"
+        );
+        x_min = -180;
+        x_max = 180;
+        y_min = -90;
+        y_max = 90;
+      }
+
       self._rasterBounds = L.latLngBounds([
         [y_min, x_min],
         [y_max, x_max]
@@ -455,7 +465,3 @@ L.LeafletGeotiffRenderer = L.Class.extend({
 L.leafletGeotiff = function(url, options) {
   return new L.LeafletGeotiff(url, options);
 };
-
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  module.exports = L;
-}

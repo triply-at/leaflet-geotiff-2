@@ -1,11 +1,6 @@
+import plotty from 'plotty';
+
 // Depends on:
-// https://github.com/santilland/plotty
-
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  var L = require("leaflet-geotiff");
-  var plotty = require("plotty");
-}
-
 L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
   options: {
     colorScale: "viridis",
@@ -14,30 +9,28 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     displayMin: 0,
     displayMax: 1
   },
-
-  initialize: function(options) {
+  initialize: function (options) {
     if (typeof plotty === "undefined") {
       throw new Error("plotty not defined");
     }
-    this.name = "Plotty";
 
+    this.name = "Plotty";
     L.setOptions(this, options);
 
     this._preLoadColorScale();
   },
-
-  setColorScale: function(colorScale) {
+  setColorScale: function (colorScale) {
     this.options.colorScale = colorScale;
+
     this.parent._reset();
   },
-
-  setDisplayRange: function(min, max) {
+  setDisplayRange: function (min, max) {
     this.options.displayMin = min;
     this.options.displayMax = max;
+
     this.parent._reset();
   },
-
-  _preLoadColorScale: function() {
+  _preLoadColorScale: function () {
     var canvas = document.createElement("canvas");
     var plot = new plotty.plot({
       canvas: canvas,
@@ -51,11 +44,11 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     });
     this.colorScaleData = plot.colorScaleCanvas.toDataURL();
   },
-
-  render: function(raster, canvas, ctx, args) {
+  render: function (raster, canvas, ctx, args) {
     var plottyCanvas = document.createElement("canvas");
     var plot = new plotty.plot({
-      data: raster.data[0], // fix for use with rgb conversion (appending alpha channel)
+      data: raster.data[0],
+      // fix for use with rgb conversion (appending alpha channel)
       width: raster.width,
       height: raster.height,
       domain: [this.options.displayMin, this.options.displayMax],
@@ -67,21 +60,13 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     });
     plot.setNoDataValue(-9999);
     plot.render();
-
     this.colorScaleData = plot.colorScaleCanvas.toDataURL();
-
-    var rasterImageData = plottyCanvas
-      .getContext("2d")
-      .getImageData(0, 0, plottyCanvas.width, plottyCanvas.height);
+    var rasterImageData = plottyCanvas.getContext("2d").getImageData(0, 0, plottyCanvas.width, plottyCanvas.height);
     var imageData = this.parent.transform(rasterImageData, args);
     ctx.putImageData(imageData, args.xStart, args.yStart);
   }
 });
 
-L.LeafletGeotiff.plotty = function(options) {
+L.LeafletGeotiff.plotty = function (options) {
   return new L.LeafletGeotiff.Plotty(options);
 };
-
-if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  module.exports = L.LeafletGeotiff;
-}
