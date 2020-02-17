@@ -60,6 +60,18 @@ $(document).ready(function() {
     windSpeedLayer.options.renderer.setColorScale(colorScale);
   });
 
+  $("#getBounds").on("click", event => {
+    event.preventDefault();
+    const bounds = windSpeedLayer.getBounds();
+    map.fitBounds(bounds, { maxZoom: 15 });
+  });
+
+  $("#getColorbarOptions").on("click", event => {
+    event.preventDefault();
+    const options = windSpeedLayer.options.renderer.getColorbarOptions();
+    console.log("getColorbarOptions", options);
+  });
+
   let popup;
   map.on("click", function(e) {
     if (!popup) {
