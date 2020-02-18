@@ -8,9 +8,13 @@ A [LeafletJS](http://www.leafletjs.com) plugin for displaying geoTIFF raster dat
 
 ### 1. Load modules
 
+Dependencies must also be available:
+
+- [Leaflet >= 0.7.7](http://leafletjs.com)
+- [geotiff.js](https://github.com/constantinius/geotiff.js)
+- [plotty](https://github.com/santilland/plotty) (optional)
+
 ```javascript
-import L from "leaflet";
-import "geotiff";
 import "leaflet-geotiff-2";
 
 // optional renderers
@@ -159,12 +163,6 @@ npm run build
 This repo is an attempt to pull together a bunch of community-driven improvements that
 have been made in various forks of `leaflet-geotiff` over the years but have failed to
 make it back into the `leaflet-geotiff` npm package, and to provide a place for active development for new features.
-
-## Dependencies
-
-- [Leaflet >= 0.7.7](http://leafletjs.com)
-- [geotiff.js](https://github.com/constantinius/geotiff.js)
-- [plotty](https://github.com/santilland/plotty) (optional)
 
 [npm-image]: https://badge.fury.io/js/leaflet-geotiff-2.svg
 [npm-url]: https://www.npmjs.com/package/leaflet-geotiff-2
