@@ -1,3 +1,5 @@
+import GeoTIFF from "geotiff";
+
 // Ideas from:
 // https://github.com/ScanEx/Leaflet.imageTransform/blob/master/src/L.ImageTransform.js
 // https://github.com/BenjaminVadant/leaflet-ugeojson
@@ -119,74 +121,71 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       map.off("zoomanim", this._animateZoom, this);
     }
   },
-  _getData() {
-    var self = this;
-    var request = new XMLHttpRequest();
-    request.onload = function() {
-      if (this.status >= 200 && this.status < 400) {
-        self._parseTIFF(this.response);
-      } else if (self.options.onError) {
-        self.options.onError(this.response);
-      } else {
-        console.error(`Failed to load ${self._url}`, this.response);
-      }
-    };
-    request.open("GET", this._url, true);
-    request.responseType = "arraybuffer";
-    request.send();
-  },
-  _parseTIFF(arrayBuffer) {
-    var self = this;
-    let tiff = GeoTIFF.parse(arrayBuffer);
-    self.tiff = tiff;
-    self.setBand(self.options.band);
-    if (!self.options.bounds) {
-      var image = self.tiff.getImage(self.options.image);
-      var meta = image.getFileDirectory();
 
-      // console.log("Using ModelTiepoint...", meta);
+  async _getData() {
+    const tiff = await GeoTIFF.fromUrl(this._url).catch(e => {
+      if (this.options.onError) {
+        this.options.onError(e);
+      } else {
+        console.error(`Failed to load ${this._url}`, e);
+        return false;
+      }
+    });
+    this._processTIFF(tiff);
+    return true;
+  },
+
+  async _processTIFF(tiff) {
+    this.tiff = tiff;
+    await this.setBand(this.options.band);
+    if (!this.options.bounds) {
+      const image = await this.tiff.getImage(this.options.image);
+      const meta = await image.getFileDirectory();
+      console.log("meta", meta);
+
       try {
-        this.x_min = meta.ModelTiepoint[3];
-        this.x_max = this.x_min + meta.ModelPixelScale[0] * meta.ImageWidth;
-        this.y_min = meta.ModelTiepoint[4];
-        this.y_max = this.y_min - meta.ModelPixelScale[1] * meta.ImageLength;
+        const bounds = image.getBoundingBox();
+        this.x_min = bounds[0];
+        this.x_max = bounds[2];
+        this.y_min = bounds[1];
+        this.y_max = bounds[3];
       } catch (e) {
         console.debug(
-          "No bounds supplied, and no ModelTiepoint found in metadata."
+          "No bounds supplied, and unable to parse bounding box from metadata."
         );
-        if (self.options.onError) self.options.onError(e);
+        if (this.options.onError) this.options.onError(e);
       }
 
-      self._rasterBounds = L.latLngBounds([
+      this._rasterBounds = L.latLngBounds([
         [this.y_min, this.x_min],
         [this.y_max, this.x_max]
       ]);
-      self._reset();
+      this._reset();
     }
   },
-  setBand(band) {
-    var self = this;
-    self.options.band = band;
+  async setBand(band) {
+    this.options.band = band;
 
-    var image = self.tiff.getImage(self.options.image);
-    var data = image.readRasters({ samples: self.options.samples });
-    var r = data[self.options.rBand];
-    var g = data[self.options.gBand];
-    var b = data[self.options.bBand];
+    const image = await this.tiff.getImage(this.options.image);
+    const data = await image.readRasters({ samples: this.options.samples });
+    const r = data[this.options.rBand];
+    const g = data[this.options.gBand];
+    const b = data[this.options.bBand];
     // map transparency value to alpha channel if transpValue is specified
-    var a = self.options.transpValue
-      ? data[self.options.alphaBand].map(function(v) {
-          return v == self.options.transpValue ? 0 : 255;
+    const a = this.options.transpValue
+      ? data[this.options.alphaBand].map(v => {
+          return v == this.options.transpValue ? 0 : 255;
         })
-      : data[self.options.alphaBand];
+      : data[this.options.alphaBand];
 
-    self.raster.data = [r, g, b, a].filter(function(v) {
+    this.raster.data = [r, g, b, a].filter(function(v) {
       return v;
     });
-    self.raster.width = image.getWidth();
-    self.raster.height = image.getHeight();
-    console.log("image", image, "data", data, "raster", self.raster.data);
-    self._reset();
+    this.raster.width = image.getWidth();
+    this.raster.height = image.getHeight();
+    console.log("image", image, "data", data, "raster", this.raster.data);
+    this._reset();
+    return true;
   },
   getRasterArray() {
     return this.raster.data;

@@ -11,8 +11,8 @@ A [LeafletJS](http://www.leafletjs.com) plugin for displaying geoTIFF raster dat
 Dependencies must be loaded:
 
 - [Leaflet >= 0.7.7](http://leafletjs.com)
-- [geotiff.js 0.4.1](https://github.com/constantinius/geotiff.js)
-- [plotty 0.4.1](https://github.com/santilland/plotty) (optional)
+- [geotiff.js == 1.0.0-beta.7](https://github.com/constantinius/geotiff.js)
+- [plotty == 0.4.1](https://github.com/santilland/plotty) (optional)
 
 ```javascript
 import "leaflet-geotiff-2";
@@ -60,7 +60,7 @@ Methods - L.leafletGeotiff
 | method             | params                           | description                           |
 | ------------------ | -------------------------------- | ------------------------------------- |
 | `getBounds`        |                                  | get leaflet LatLngBounds of the layer |
-| `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get leaflet raster value at a point\* |
+| `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get raster value at a point\*         |
 
 \*note this [has problems](https://github.com/danwild/leaflet-geotiff-2/issues/1).
 

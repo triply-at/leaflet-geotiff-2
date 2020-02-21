@@ -9,28 +9,28 @@
     options: {
       cutoffBrightest: 0
     },
-    initialize: function initialize(options) {
+    initialize: function (options) {
       L.setOptions(this, options);
       this.name = "Canvas Renderer";
     },
-    render: function render(raster, canvas, ctx, args) {
+    render: function (raster, canvas, ctx, args) {
       var rasterImageData = ctx.createImageData(raster.width, raster.height);
       var isGrayscale = raster.data.length < 3; // compute max band max value if not set yet
 
       if (!this.options.bandMaxVal) {
-        var maxVal = 0;
+        let maxVal = 0;
 
-        for (var i = 0; i < raster.data.length; i++) {
+        for (let i = 0; i < raster.data.length; i++) {
           // get max value per band
 
           /*// first return sorted array of unique values that are not NaN
                   let srt = raster.data[i].filter(function(v, index, self){return (!isNaN(v) && self.indexOf(v)===index);}).sort();
                   */
           //  first return sorted array of values that are not NaN
-          var srt = raster.data[i].filter(function (v, index, self) {
+          let srt = raster.data[i].filter(function (v, index, self) {
             return !isNaN(v);
           }).sort();
-          var cMax = srt[srt.length - 1];
+          let cMax = srt[srt.length - 1];
 
           if (this.options.cutoffBrightest && this.options.cutoffBrightest > 0 && this.options.cutoffBrightest < 1) {
             cMax = srt[srt.length - 1 - Math.round(srt.length * this.options.cutoffBrightest)];
@@ -51,14 +51,14 @@
         return Math.round(val / scaleMax * 255);
       }
 
-      for (var _i = 0, j = 0; _i < rasterImageData.data.length; _i += 4, j += 1) {
-        rasterImageData.data[_i] = scale(raster.data[0][j]); // R value
+      for (let i = 0, j = 0; i < rasterImageData.data.length; i += 4, j += 1) {
+        rasterImageData.data[i] = scale(raster.data[0][j]); // R value
 
-        rasterImageData.data[_i + 1] = scale(raster.data[isGrayscale ? 0 : 1][j]); // G value
+        rasterImageData.data[i + 1] = scale(raster.data[isGrayscale ? 0 : 1][j]); // G value
 
-        rasterImageData.data[_i + 2] = scale(raster.data[isGrayscale ? 0 : 2][j]); // B value
+        rasterImageData.data[i + 2] = scale(raster.data[isGrayscale ? 0 : 2][j]); // B value
 
-        rasterImageData.data[_i + 3] = isGrayscale || !raster.data[3] ? 255 : raster.data[3][j]; // A value
+        rasterImageData.data[i + 3] = isGrayscale || !raster.data[3] ? 255 : raster.data[3][j]; // A value
       }
 
       var imageData = this.parent.transform(rasterImageData, args);

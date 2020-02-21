@@ -7,7 +7,10 @@ export default [
     output: [
       {
         dir: "dist",
-        format: moduleFormat
+        format: moduleFormat,
+        globals: {
+          "@babel/runtime/regenerator": "regeneratorRuntime"
+        }
       }
     ],
     plugins: [babel({ exclude: "node_modules/**" })]
@@ -20,8 +23,25 @@ export default [
         format: moduleFormat
       }
     ],
-    plugins: [babel({ exclude: "node_modules/**" })],
-    external: ["plotty"]
+    plugins: [
+      babel({
+        exclude: "node_modules/**",
+        runtimeHelpers: true,
+        presets: ["@babel/preset-env"],
+        plugins: [
+          "@babel/plugin-transform-async-to-generator",
+          "@babel/plugin-transform-regenerator",
+          [
+            "@babel/plugin-transform-runtime",
+            {
+              helpers: true,
+              regenerator: true
+            }
+          ]
+        ]
+      })
+    ],
+    external: ["geotiff", "plotty"]
   },
   {
     input: "src/leaflet-geotiff-rgb.js",

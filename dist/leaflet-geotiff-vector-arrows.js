@@ -7,16 +7,16 @@
     options: {
       arrowSize: 20
     },
-    initialize: function initialize(options) {
+    initialize: function (options) {
       this.name = "Vector";
       L.setOptions(this, options);
     },
-    setArrowSize: function setArrowSize(colorScale) {
+    setArrowSize: function (colorScale) {
       this.options.colorScale = colorScale;
 
       this.parent._reset();
     },
-    render: function render(raster, canvas, ctx, args) {
+    render: function (raster, canvas, ctx, args) {
       var arrowSize = this.options.arrowSize;
       var gridPxelSize = (args.rasterPixelBounds.max.x - args.rasterPixelBounds.min.x) / raster.width;
       var stride = Math.max(1, Math.floor(1.2 * arrowSize / gridPxelSize));

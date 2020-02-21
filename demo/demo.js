@@ -5,8 +5,9 @@ $(document).ready(function() {
     "http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png"
   ).addTo(map);
 
-  const windSpeedUrl =
-    "https://danwild.github.io/leaflet-geotiff-2/wind_speed.tif";
+  const windSpeedUrl = "http://127.0.0.1:5500/demo/wind_speed.tif";
+  // const windSpeedUrl =
+  //   "https://danwild.github.io/leaflet-geotiff-2/wind_speed.tif";
 
   const plottyRenderer = L.LeafletGeotiff.plotty({
     displayMin: 0,
@@ -19,14 +20,15 @@ $(document).ready(function() {
   }).addTo(map);
 
   // VECTOR ARROW EG
+  const windDirUrl = "http://127.0.0.1:5500/demo/wind_direction.tif";
   // const windDirUrl =
   //   "https://danwild.github.io/leaflet-geotiff-2/wind_direction.tif";
-  // const arrowRenderer = L.LeafletGeotiff.vectorArrows({
-  //   arrowSize: 20
-  // });
-  // const windDirLayer = L.leafletGeotiff(windDirUrl, {
-  //   renderer: arrowRenderer
-  // }).addTo(map);
+  const arrowRenderer = L.LeafletGeotiff.vectorArrows({
+    arrowSize: 20
+  });
+  const windDirLayer = L.leafletGeotiff(windDirUrl, {
+    renderer: arrowRenderer
+  }).addTo(map);
 
   $("#displayMin").on("change", event => {
     windSpeedLayer.options.renderer.setDisplayRange(
