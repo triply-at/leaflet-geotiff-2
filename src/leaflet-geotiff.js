@@ -65,7 +65,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     alphaBand: 0, // band to use for (generating) alpha channel
     transpValue: 0, // original band value to interpret as transparent
     pane: "overlayPane",
-    onError: null
+    onError: null,
+    sourceFunction: null
   },
 
   initialize(url, options) {
@@ -75,6 +76,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
     this._url = url;
     this.raster = {};
+    this.sourceFunction = GeoTIFF.fromUrl;
 
     this.x_min = null;
     this.x_max = null;
@@ -88,6 +90,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     }
     if (this.options.renderer) {
       this.options.renderer.setParent(this);
+    }
+    if (this.options.sourceFunction) {
+      this.sourceFunction = this.options.sourceFunction;
     }
 
     this._getData();
@@ -123,7 +128,8 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   },
 
   async _getData() {
-    const tiff = await GeoTIFF.fromUrl(this._url).catch(e => {
+    console.log(this.options);
+    const tiff = await this.sourceFunction(this._url).catch(e => {
       if (this.options.onError) {
         this.options.onError(e);
       } else {

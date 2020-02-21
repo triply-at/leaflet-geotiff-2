@@ -48,7 +48,10 @@ const options = {
   // Optional leaflet pane to add the layer.
   pane: "overlayPane",
   // Optional callback to handle failed URL request or parsing of tif
-  onError: null
+  onError: null,
+  // Optional, override default GeoTIFF function used to load source data
+  // Oneof: fromUrl, fromBlob, fromArrayBuffer
+  sourceFunction: GeoTIFF.fromUrl
 };
 
 // create layer
