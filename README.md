@@ -65,8 +65,6 @@ Methods - L.leafletGeotiff
 | `getBounds`        |                                  | get leaflet LatLngBounds of the layer |
 | `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get raster value at a point\*         |
 
-\*note this [has problems](https://github.com/danwild/leaflet-geotiff-2/issues/1).
-
 ---
 
 ## Renderer - Plotty

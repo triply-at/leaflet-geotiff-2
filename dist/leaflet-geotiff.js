@@ -213,8 +213,10 @@
     getValueAtLatLng(lat, lng) {
       try {
         var x = Math.floor(this.raster.width * (lng - this._rasterBounds._southWest.lng) / (this._rasterBounds._northEast.lng - this._rasterBounds._southWest.lng));
-        var y = this.raster.height - Math.ceil(this.raster.height * (lat - this._rasterBounds._southWest.lat) / (this._rasterBounds._northEast.lat - this._rasterBounds._southWest.lat));
-        var i = y * this.raster.width + x;
+        var y = this.raster.height - Math.ceil(this.raster.height * (lat - this._rasterBounds._southWest.lat) / (this._rasterBounds._northEast.lat - this._rasterBounds._southWest.lat)); // invalid indices
+
+        if (x < 0 || x > this.raster.width || y < 0 || y > this.raster.height) return null;
+        const i = y * this.raster.width + x;
         return this.raster.data[0][i];
       } catch (err) {
         return undefined;
