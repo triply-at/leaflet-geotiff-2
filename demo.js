@@ -7,7 +7,7 @@ $(document).ready(function() {
 
   const windSpeedUrl =
     "https://danwild.github.io/leaflet-geotiff-2/wind_speed.tif";
-
+  // const windSpeedUrl = "http://localhost:5500/wind_speed.tif";
   const plottyRenderer = L.LeafletGeotiff.plotty({
     displayMin: 0,
     displayMax: 10,
@@ -82,8 +82,6 @@ $(document).ready(function() {
       popup.setLatLng([e.latlng.lat, e.latlng.lng]);
     }
     const value = windSpeedLayer.getValueAtLatLng(+e.latlng.lat, +e.latlng.lng);
-    popup
-      .setContent(`Possible value at point (experimental/buggy): ${value}`)
-      .openOn(map);
+    popup.setContent(`Raster value at point: ${value}`).openOn(map);
   });
 });
