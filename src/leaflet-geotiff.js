@@ -67,7 +67,6 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     pane: "overlayPane",
     onError: null,
     sourceFunction: null,
-
     noDataValue: undefined,
     noDataKey: undefined
   },
@@ -85,6 +84,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     this.x_max = null;
     this.y_min = null;
     this.y_max = null;
+
+    this.min = null;
+    this.max = null;
 
     L.Util.setOptions(this, options);
 
@@ -177,6 +179,13 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         [this.y_max, this.x_max]
       ]);
       this._reset();
+
+      this.min = this.raster.data[0]
+        .filter(val => val !== this.options.noDataValue)
+        .reduce((a, b) => Math.min(a, b));
+      this.max = this.raster.data[0]
+        .filter(val => val !== this.options.noDataValue)
+        .reduce((a, b) => Math.max(a, b));
     }
   },
   async setBand(band) {
@@ -214,6 +223,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   },
   getBounds() {
     return this._rasterBounds;
+  },
+  getMinMax() {
+    return { min: this.min, max: this.max };
   },
   getValueAtLatLng(lat, lng) {
     try {

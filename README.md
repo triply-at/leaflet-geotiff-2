@@ -68,10 +68,11 @@ var layer = L.leafletGeotiff(url, options).addTo(map);
 
 Methods - L.leafletGeotiff
 
-| method             | params                           | description                           |
-| ------------------ | -------------------------------- | ------------------------------------- |
-| `getBounds`        |                                  | get leaflet LatLngBounds of the layer |
-| `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get raster value at a point\*         |
+| method             | params                           | description                                                 |
+| ------------------ | -------------------------------- | ----------------------------------------------------------- |
+| `getBounds`        |                                  | get leaflet LatLngBounds of the layer                       |
+| `getMinMax`        |                                  | get min max values in data (ignores noDataValue if defined) |
+| `getValueAtLatLng` | (`lat: {Number}, lng: {Number}`) | get raster value at a point\*                               |
 
 ---
 

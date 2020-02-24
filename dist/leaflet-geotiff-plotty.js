@@ -12,8 +12,8 @@
       colorScale: "viridis",
       clampLow: true,
       clampHigh: true,
-      displayMin: null,
-      displayMax: null
+      displayMin: 0,
+      displayMax: 1
     },
     initialize: function initialize(options) {
       if (typeof plotty === "undefined") {

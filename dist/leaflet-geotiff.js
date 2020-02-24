@@ -79,6 +79,8 @@
       this.x_max = null;
       this.y_min = null;
       this.y_max = null;
+      this.min = null;
+      this.max = null;
       L.Util.setOptions(this, options);
 
       if (this.options.bounds) {
@@ -167,12 +169,14 @@
 
         if (this.options.noDataKey) {
           this.options.noDataValue = this.getDescendantProp(image, this.options.noDataKey);
-          console.log(`set this.options.noDataValue: ${this.options.noDataValue}`);
         }
 
         this._rasterBounds = L.latLngBounds([[this.y_min, this.x_min], [this.y_max, this.x_max]]);
 
         this._reset();
+
+        this.min = this.raster.data[0].filter(val => val !== this.options.noDataValue).reduce((a, b) => Math.min(a, b));
+        this.max = this.raster.data[0].filter(val => val !== this.options.noDataValue).reduce((a, b) => Math.max(a, b));
       }
     },
 
@@ -215,6 +219,13 @@
 
     getBounds() {
       return this._rasterBounds;
+    },
+
+    getMinMax() {
+      return {
+        min: this.min,
+        max: this.max
+      };
     },
 
     getValueAtLatLng(lat, lng) {
@@ -443,6 +454,10 @@
       return imageData;
     },
 
+    /**
+     * Supports retreival of nested properties via
+     * dot notation, e.g. foo.bar.baz
+     */
     getDescendantProp(obj, desc) {
       const arr = desc.split(".");
 
