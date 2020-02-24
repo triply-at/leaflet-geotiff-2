@@ -12,8 +12,8 @@
       colorScale: "viridis",
       clampLow: true,
       clampHigh: true,
-      displayMin: 0,
-      displayMax: 1
+      displayMin: null,
+      displayMax: null
     },
     initialize: function initialize(options) {
       if (typeof plotty === "undefined") {
@@ -68,7 +68,7 @@
         data: [0],
         width: 1,
         height: 1,
-        domain: [this.options.displayMin, this.options.displayMax],
+        domain: [this.options.displayMin, this.options.displayMax + 1],
         colorScale: this.options.colorScale,
         clampLow: this.options.clampLow,
         clampHigh: this.options.clampHigh
@@ -82,7 +82,7 @@
         // fix for use with rgb conversion (appending alpha channel)
         width: raster.width,
         height: raster.height,
-        domain: [this.options.displayMin, this.options.displayMax],
+        domain: [this.options.displayMin, this.options.displayMax + 1],
         colorScale: this.options.colorScale,
         clampLow: this.options.clampLow,
         clampHigh: this.options.clampHigh,
