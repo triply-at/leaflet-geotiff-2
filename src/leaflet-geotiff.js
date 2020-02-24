@@ -66,7 +66,10 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     transpValue: 0, // original band value to interpret as transparent
     pane: "overlayPane",
     onError: null,
-    sourceFunction: null
+    sourceFunction: null,
+
+    noDataValue: undefined,
+    noDataKey: undefined
   },
 
   initialize(url, options) {
@@ -162,6 +165,13 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         if (this.options.onError) this.options.onError(e);
       }
 
+      if (this.options.noDataKey) {
+        this.options.noDataValue = this.getDescendantProp(
+          image,
+          this.options.noDataKey
+        );
+      }
+
       this._rasterBounds = L.latLngBounds([
         [this.y_min, this.x_min],
         [this.y_max, this.x_max]
@@ -225,7 +235,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         return null;
 
       const i = y * this.raster.width + x;
-      return this.raster.data[0][i];
+      const value = this.raster.data[0][i];
+
+      if (this.options.noDataValue === undefined) return value;
+      const noData = parseInt(this.options.noDataValue);
+      if (value !== noData) return value;
+      return null;
     } catch (err) {
       return undefined;
     }
@@ -461,6 +476,16 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       }
     }
     return imageData;
+  },
+
+  /**
+   * Supports retreival of nested properties via
+   * dot notation, e.g. foo.bar.baz
+   */
+  getDescendantProp(obj, desc) {
+    const arr = desc.split(".");
+    while (arr.length && (obj = obj[arr.shift()]));
+    return obj;
   }
 });
 

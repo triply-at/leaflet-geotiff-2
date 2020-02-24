@@ -62,7 +62,9 @@
       // original band value to interpret as transparent
       pane: "overlayPane",
       onError: null,
-      sourceFunction: null
+      sourceFunction: null,
+      noDataValue: undefined,
+      noDataKey: undefined
     },
 
     initialize(url, options) {
@@ -163,6 +165,11 @@
           if (this.options.onError) this.options.onError(e);
         }
 
+        if (this.options.noDataKey) {
+          this.options.noDataValue = this.getDescendantProp(image, this.options.noDataKey);
+          console.log(`set this.options.noDataValue: ${this.options.noDataValue}`);
+        }
+
         this._rasterBounds = L.latLngBounds([[this.y_min, this.x_min], [this.y_max, this.x_max]]);
 
         this._reset();
@@ -217,7 +224,11 @@
 
         if (x < 0 || x > this.raster.width || y < 0 || y > this.raster.height) return null;
         const i = y * this.raster.width + x;
-        return this.raster.data[0][i];
+        const value = this.raster.data[0][i];
+        if (this.options.noDataValue === undefined) return value;
+        const noData = parseInt(this.options.noDataValue);
+        if (value !== noData) return value;
+        return null;
       } catch (err) {
         return undefined;
       }
@@ -430,6 +441,14 @@
       }
 
       return imageData;
+    },
+
+    getDescendantProp(obj, desc) {
+      const arr = desc.split(".");
+
+      while (arr.length && (obj = obj[arr.shift()]));
+
+      return obj;
     }
 
   });

@@ -51,7 +51,15 @@ const options = {
   onError: null,
   // Optional, override default GeoTIFF function used to load source data
   // Oneof: fromUrl, fromBlob, fromArrayBuffer
-  sourceFunction: GeoTIFF.fromUrl
+  sourceFunction: GeoTIFF.fromUrl,
+  // Optional nodata value (integer)
+  // (to be ignored by getValueAtLatLng)
+  noDataValue: undefined,
+  // Optional key to extract nodata value from GeoTIFFImage
+  // nested keys can be provided in dot notation, e.g. foo.bar.baz
+  // (to be ignored by getValueAtLatLng)
+  // this overrides noDataValue, the nodata value should be an integer
+  noDataKey: undefined
 };
 
 // create layer
