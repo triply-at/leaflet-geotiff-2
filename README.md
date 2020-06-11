@@ -29,37 +29,50 @@ Parameters:
 
 ```javascript
 // GeoTIFF file URL. Currently only EPSG:4326 files are supported
+// Can be null if sourceFunction is GeoTIFF.fromArrayBuffer
 const url =
   "https://stuartmatthews.github.io/leaflet-geotiff/tif/wind_speed.tif";
 const options = {
   // See renderer sections below.
   // One of: L.LeafletGeotiff.rgb, L.LeafletGeotiff.plotty, L.LeafletGeotiff.vectorArrows
   renderer: null,
+
   // Optional array specifying the corners of the data, e.g. [[40.712216, -74.22655], [40.773941, -74.12544]].
   // If omitted the image bounds will be read from the geoTIFF file (ModelTiepoint).
   bounds: [],
+
   // Optional geoTIFF band to read
   band: 0,
+
   // Optional geoTIFF image to read
   image: 0,
+
   // Optional clipping polygon, provided as an array of [lat,lon] coordinates.
   // Note that this is the Leaflet [lat,lon] convention, not geoJSON [lon,lat].
   clip: undefined,
+
   // Optional leaflet pane to add the layer.
   pane: "overlayPane",
+
   // Optional callback to handle failed URL request or parsing of tif
   onError: null,
+
   // Optional, override default GeoTIFF function used to load source data
   // Oneof: fromUrl, fromBlob, fromArrayBuffer
   sourceFunction: GeoTIFF.fromUrl,
+
+  // Only required if sourceFunction is GeoTIFF.fromArrayBuffer
+  arrayBuffer: null,
+
   // Optional nodata value (integer)
   // (to be ignored by getValueAtLatLng)
   noDataValue: undefined,
+
   // Optional key to extract nodata value from GeoTIFFImage
   // nested keys can be provided in dot notation, e.g. foo.bar.baz
   // (to be ignored by getValueAtLatLng)
   // this overrides noDataValue, the nodata value should be an integer
-  noDataKey: undefined
+  noDataKey: undefined,
 };
 
 // create layer
@@ -90,7 +103,7 @@ const options = {
   clampLow: true,
   clampHigh: true,
   // Optional. Plotty color scale used to render the image.
-  colorScale: "viridis"
+  colorScale: "viridis",
 };
 
 const renderer = L.LeafletGeotiff.plotty(options);
@@ -133,7 +146,7 @@ const options = {
   // for all values equal to transpValue in the band alphaBand, the newly created alpha
   // channel will be set to 0 (transparent), all other pixel values will result in alpha 255 (opaque)
   transpValue: 0,
-  renderer: renderer
+  renderer: renderer,
 };
 
 // create layer
@@ -149,7 +162,7 @@ For plotting velocity (i.e. quiver plot)
 ```javascript
 const options = {
   // Optional, size in pixels of direction arrows for vector data.
-  arrowSize: 20
+  arrowSize: 20,
 };
 
 const renderer = L.LeafletGeotiff.vectorArrows(options);

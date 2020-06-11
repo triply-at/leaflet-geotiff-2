@@ -49,6 +49,7 @@
 
   L.LeafletGeotiff = L.ImageOverlay.extend({
     options: {
+      arrayBuffer: null,
       arrowSize: 20,
       band: 0,
       image: 0,
@@ -132,15 +133,27 @@
     },
 
     async _getData() {
-      console.log(this.options);
-      const tiff = await this.sourceFunction(this._url).catch(e => {
-        if (this.options.onError) {
-          this.options.onError(e);
-        } else {
-          console.error(`Failed to load ${this._url}`, e);
-          return false;
-        }
-      });
+      let tiff;
+
+      if (this.sourceFunction !== GeoTIFF.fromArrayBuffer) {
+        tiff = await this.sourceFunction(this._url).catch(e => {
+          if (this.options.onError) {
+            this.options.onError(e);
+          } else {
+            console.error(`Failed to load from url or blob ${this._url}`, e);
+            return false;
+          }
+        });
+      } else {
+        tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer).catch(e => {
+          if (this.options.onError) {
+            this.options.onError(e);
+          } else {
+            console.error(`Failed to load from array buffer ${this._url}`, e);
+            return false;
+          }
+        });
+      }
 
       this._processTIFF(tiff);
 

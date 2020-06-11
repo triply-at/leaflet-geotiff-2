@@ -55,6 +55,7 @@ try {
 
 L.LeafletGeotiff = L.ImageOverlay.extend({
   options: {
+    arrayBuffer: null,
     arrowSize: 20,
     band: 0,
     image: 0,
@@ -68,7 +69,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     onError: null,
     sourceFunction: null,
     noDataValue: undefined,
-    noDataKey: undefined
+    noDataKey: undefined,
   },
 
   initialize(url, options) {
@@ -133,15 +134,29 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   },
 
   async _getData() {
-    console.log(this.options);
-    const tiff = await this.sourceFunction(this._url).catch(e => {
-      if (this.options.onError) {
-        this.options.onError(e);
-      } else {
-        console.error(`Failed to load ${this._url}`, e);
-        return false;
-      }
-    });
+    let tiff;
+    if (this.sourceFunction !== GeoTIFF.fromArrayBuffer) {
+      tiff = await this.sourceFunction(this._url).catch((e) => {
+        if (this.options.onError) {
+          this.options.onError(e);
+        } else {
+          console.error(`Failed to load from url or blob ${this._url}`, e);
+          return false;
+        }
+      });
+    } else {
+      tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer).catch(
+        (e) => {
+          if (this.options.onError) {
+            this.options.onError(e);
+          } else {
+            console.error(`Failed to load from array buffer ${this._url}`, e);
+            return false;
+          }
+        }
+      );
+    }
+
     this._processTIFF(tiff);
     return true;
   },
@@ -176,15 +191,15 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
       this._rasterBounds = L.latLngBounds([
         [this.y_min, this.x_min],
-        [this.y_max, this.x_max]
+        [this.y_max, this.x_max],
       ]);
       this._reset();
 
       this.min = this.raster.data[0]
-        .filter(val => val !== this.options.noDataValue)
+        .filter((val) => val !== this.options.noDataValue)
         .reduce((a, b) => Math.min(a, b));
       this.max = this.raster.data[0]
-        .filter(val => val !== this.options.noDataValue)
+        .filter((val) => val !== this.options.noDataValue)
         .reduce((a, b) => Math.max(a, b));
     }
   },
@@ -198,12 +213,12 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     const b = data[this.options.bBand];
     // map transparency value to alpha channel if transpValue is specified
     const a = this.options.transpValue
-      ? data[this.options.alphaBand].map(v => {
+      ? data[this.options.alphaBand].map((v) => {
           return v == this.options.transpValue ? 0 : 255;
         })
       : data[this.options.alphaBand];
 
-    this.raster.data = [r, g, b, a].filter(function(v) {
+    this.raster.data = [r, g, b, a].filter(function (v) {
       return v;
     });
     this.raster.width = image.getWidth();
@@ -498,7 +513,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     const arr = desc.split(".");
     while (arr.length && (obj = obj[arr.shift()]));
     return obj;
-  }
+  },
 });
 
 L.LeafletGeotiffRenderer = L.Class.extend({
@@ -512,9 +527,9 @@ L.LeafletGeotiffRenderer = L.Class.extend({
 
   render(raster, canvas, ctx, args) {
     throw new Error("Abstract class");
-  }
+  },
 });
 
-L.leafletGeotiff = function(url, options) {
+L.leafletGeotiff = function (url, options) {
   return new L.LeafletGeotiff(url, options);
 };
