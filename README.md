@@ -73,6 +73,9 @@ const options = {
   // (to be ignored by getValueAtLatLng)
   // this overrides noDataValue, the nodata value should be an integer
   noDataKey: undefined,
+
+  // The block size to use for buffer
+  blockSize: 65536,
 };
 
 // create layer

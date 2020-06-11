@@ -80,6 +80,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     this._url = url;
     this.raster = {};
     this.sourceFunction = GeoTIFF.fromUrl;
+    this._blockSize = 65536;
 
     this.x_min = null;
     this.x_max = null;
@@ -99,6 +100,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
     }
     if (this.options.sourceFunction) {
       this.sourceFunction = this.options.sourceFunction;
+    }
+    if (this.options.blockSize) {
+      this._blockSize = this.options.blockSize;
     }
 
     this._getData();
@@ -136,7 +140,9 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   async _getData() {
     let tiff;
     if (this.sourceFunction !== GeoTIFF.fromArrayBuffer) {
-      tiff = await this.sourceFunction(this._url).catch((e) => {
+      tiff = await this.sourceFunction(this._url, {
+        blockSize: this._blockSize,
+      }).catch((e) => {
         if (this.options.onError) {
           this.options.onError(e);
         } else {
@@ -145,16 +151,16 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
         }
       });
     } else {
-      tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer).catch(
-        (e) => {
-          if (this.options.onError) {
-            this.options.onError(e);
-          } else {
-            console.error(`Failed to load from array buffer ${this._url}`, e);
-            return false;
-          }
+      tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer, {
+        blockSize: this._blockSize,
+      }).catch((e) => {
+        if (this.options.onError) {
+          this.options.onError(e);
+        } else {
+          console.error(`Failed to load from array buffer ${this._url}`, e);
+          return false;
         }
-      );
+      });
     }
 
     this._processTIFF(tiff);

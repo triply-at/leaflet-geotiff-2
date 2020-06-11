@@ -76,6 +76,7 @@
       this._url = url;
       this.raster = {};
       this.sourceFunction = GeoTIFF.fromUrl;
+      this._blockSize = 65536;
       this.x_min = null;
       this.x_max = null;
       this.y_min = null;
@@ -94,6 +95,10 @@
 
       if (this.options.sourceFunction) {
         this.sourceFunction = this.options.sourceFunction;
+      }
+
+      if (this.options.blockSize) {
+        this._blockSize = this.options.blockSize;
       }
 
       this._getData();
@@ -136,7 +141,9 @@
       let tiff;
 
       if (this.sourceFunction !== GeoTIFF.fromArrayBuffer) {
-        tiff = await this.sourceFunction(this._url).catch(e => {
+        tiff = await this.sourceFunction(this._url, {
+          blockSize: this._blockSize
+        }).catch(e => {
           if (this.options.onError) {
             this.options.onError(e);
           } else {
@@ -145,7 +152,9 @@
           }
         });
       } else {
-        tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer).catch(e => {
+        tiff = await GeoTIFF.fromArrayBuffer(this.options.arrayBuffer, {
+          blockSize: this._blockSize
+        }).catch(e => {
           if (this.options.onError) {
             this.options.onError(e);
           } else {

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
   // MAP
   const map = L.map("map").setView([-37, 150], 5);
   L.tileLayer(
@@ -13,10 +13,10 @@ $(document).ready(function() {
     displayMin: 0,
     displayMax: 10,
     clampLow: false,
-    clampHigh: false
+    clampHigh: false,
   });
   const windSpeedLayer = L.leafletGeotiff(windSpeedUrl, {
-    renderer: plottyRenderer
+    renderer: plottyRenderer,
   }).addTo(map);
 
   // VECTOR ARROW EG
@@ -24,62 +24,60 @@ $(document).ready(function() {
   // const windDirUrl =
   //   "https://danwild.github.io/leaflet-geotiff-2/wind_direction.tif";
   const arrowRenderer = L.LeafletGeotiff.vectorArrows({
-    arrowSize: 20
+    arrowSize: 20,
   });
   const windDirLayer = L.leafletGeotiff(windDirUrl, {
-    renderer: arrowRenderer
+    renderer: arrowRenderer,
   }).addTo(map);
 
-  $("#displayMin").on("change", event => {
+  $("#displayMin").on("change", (event) => {
     windSpeedLayer.options.renderer.setDisplayRange(
       +event.currentTarget.value,
       windSpeedLayer.options.renderer.options.displayMax
     );
   });
-  $("#displayMax").on("change", event => {
+  $("#displayMax").on("change", (event) => {
     windSpeedLayer.options.renderer.setDisplayRange(
       windSpeedLayer.options.renderer.options.displayMin,
       +event.currentTarget.value
     );
   });
 
-  $("#clampLow").on("change", event => {
+  $("#clampLow").on("change", (event) => {
     windSpeedLayer.options.renderer.setClamps(
       event.currentTarget.checked,
       windSpeedLayer.options.renderer.options.clampHigh
     );
   });
 
-  $("#clampHigh").on("change", event => {
+  $("#clampHigh").on("change", (event) => {
     windSpeedLayer.options.renderer.setClamps(
       windSpeedLayer.options.renderer.options.clampLow,
       event.currentTarget.checked
     );
   });
 
-  $("#colorScale").on("change", event => {
+  $("#colorScale").on("change", (event) => {
     const colorScale = $("#colorScale option:selected").val();
     windSpeedLayer.options.renderer.setColorScale(colorScale);
   });
 
-  $("#getBounds").on("click", event => {
+  $("#getBounds").on("click", (event) => {
     event.preventDefault();
     const bounds = windSpeedLayer.getBounds();
     map.fitBounds(bounds, { maxZoom: 15 });
   });
 
-  $("#getColorbarOptions").on("click", event => {
+  $("#getColorbarOptions").on("click", (event) => {
     event.preventDefault();
     const options = windSpeedLayer.options.renderer.getColorbarOptions();
     console.log("getColorbarOptions", options);
   });
 
   let popup;
-  map.on("click", function(e) {
+  map.on("click", function (e) {
     if (!popup) {
-      popup = L.popup()
-        .setLatLng([e.latlng.lat, e.latlng.lng])
-        .openOn(map);
+      popup = L.popup().setLatLng([e.latlng.lat, e.latlng.lng]).openOn(map);
     } else {
       popup.setLatLng([e.latlng.lat, e.latlng.lng]);
     }
