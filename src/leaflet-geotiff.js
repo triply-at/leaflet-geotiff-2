@@ -169,10 +169,16 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
 
   async _processTIFF(tiff) {
     this.tiff = tiff;
-    await this.setBand(this.options.band);
+    await this.setBand(this.options.band).catch((e) => {
+      console.error("this.setBand threw error", e);
+    });
     if (!this.options.bounds) {
-      const image = await this.tiff.getImage(this.options.image);
-      const meta = await image.getFileDirectory();
+      const image = await this.tiff.getImage(this.options.image).catch((e) => {
+        console.error("this.tiff.getImage threw error", e);
+      });
+      const meta = await image.getFileDirectory().catch((e) => {
+        console.error("image.getFileDirectory threw error", e);
+      });
       console.log("meta", meta);
 
       try {
@@ -212,8 +218,14 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
   async setBand(band) {
     this.options.band = band;
 
-    const image = await this.tiff.getImage(this.options.image);
-    const data = await image.readRasters({ samples: this.options.samples });
+    const image = await this.tiff.getImage(this.options.image).catch((e) => {
+      console.error("this.tiff.getImage threw error", e);
+    });
+    const data = await image
+      .readRasters({ samples: this.options.samples })
+      .catch((e) => {
+        console.error("image.readRasters threw error", e);
+      });
     const r = data[this.options.rBand];
     const g = data[this.options.gBand];
     const b = data[this.options.bBand];
