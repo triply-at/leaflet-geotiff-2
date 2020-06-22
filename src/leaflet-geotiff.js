@@ -176,9 +176,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       const image = await this.tiff.getImage(this.options.image).catch((e) => {
         console.error("this.tiff.getImage threw error", e);
       });
-      const meta = await image.getFileDirectory().catch((e) => {
-        console.error("image.getFileDirectory threw error", e);
-      });
+      const meta = await image.getFileDirectory();
       console.log("meta", meta);
 
       try {
