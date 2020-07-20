@@ -1,10 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('geotiff')) :
-  typeof define === 'function' && define.amd ? define(['geotiff'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('geotiff/dist-browser/geotiff')) :
+  typeof define === 'function' && define.amd ? define(['geotiff/dist-browser/geotiff'], factory) :
   (global = global || self, factory(global.GeoTIFF));
 }(this, (function (GeoTIFF) { 'use strict';
-
-  GeoTIFF = GeoTIFF && GeoTIFF.hasOwnProperty('default') ? GeoTIFF['default'] : GeoTIFF;
 
   // https://github.com/ScanEx/Leaflet.imageTransform/blob/master/src/L.ImageTransform.js
   // https://github.com/BenjaminVadant/leaflet-ugeojson
