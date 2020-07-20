@@ -11,7 +11,7 @@ A [LeafletJS](http://www.leafletjs.com) plugin for displaying geoTIFF raster dat
 Dependencies must be loaded:
 
 - [Leaflet >= 0.7.7](http://leafletjs.com)
-- [geotiff.js == 1.0.0-beta.7](https://github.com/constantinius/geotiff.js)
+- [geotiff.js == 1.0.0-beta.13](https://github.com/constantinius/geotiff.js)
 - [plotty == 0.4.1](https://github.com/santilland/plotty) (optional)
 
 ```javascript
