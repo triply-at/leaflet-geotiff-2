@@ -1,7 +1,7 @@
 {
   "name": "leaflet-geotiff-2",
   "description": "A LeafletJS plugin for displaying geoTIFF raster data.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "license": "MIT",
   "author": "mail@danwild.io",
   "contributors": [
@@ -17,7 +17,7 @@
   "main": "dist/leaflet-geotiff.js",
   "dependencies": {
     "leaflet": "^1.0.0",
-    "geotiff": "1.0.0-beta.7"
+    "geotiff": "1.0.0-beta.13"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
