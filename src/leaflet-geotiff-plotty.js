@@ -89,7 +89,7 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
       canvas: plottyCanvas,
       useWebGL: false
     });
-    plot.setNoDataValue(this.noDataValue);
+    plot.setNoDataValue(this.options.noDataValue);
     plot.render();
 
     this.colorScaleData = plot.colorScaleCanvas.toDataURL();
