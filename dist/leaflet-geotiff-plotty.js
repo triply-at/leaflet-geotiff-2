@@ -69,7 +69,7 @@
         data: [0],
         width: 1,
         height: 1,
-        domain: [this.options.displayMin, this.options.displayMax + 1],
+        domain: [this.options.displayMin, this.options.displayMax],
         colorScale: this.options.colorScale,
         clampLow: this.options.clampLow,
         clampHigh: this.options.clampHigh
@@ -83,7 +83,7 @@
         // fix for use with rgb conversion (appending alpha channel)
         width: raster.width,
         height: raster.height,
-        domain: [this.options.displayMin, this.options.displayMax + 1],
+        domain: [this.options.displayMin, this.options.displayMax],
         colorScale: this.options.colorScale,
         clampLow: this.options.clampLow,
         clampHigh: this.options.clampHigh,
