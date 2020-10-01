@@ -13,7 +13,8 @@
       clampLow: true,
       clampHigh: true,
       displayMin: 0,
-      displayMax: 1
+      displayMax: 1,
+      noDataValue: -9999,
     },
     initialize: function initialize(options) {
       if (typeof plotty === "undefined") {
@@ -89,7 +90,7 @@
         canvas: plottyCanvas,
         useWebGL: false
       });
-      plot.setNoDataValue(-9999);
+      plot.setNoDataValue(this.options.noDataValue);
       plot.render();
       this.colorScaleData = plot.colorScaleCanvas.toDataURL();
       var rasterImageData = plottyCanvas.getContext("2d").getImageData(0, 0, plottyCanvas.width, plottyCanvas.height);

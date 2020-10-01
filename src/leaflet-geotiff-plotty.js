@@ -9,7 +9,8 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
     clampLow: true,
     clampHigh: true,
     displayMin: 0,
-    displayMax: 1
+    displayMax: 1,
+    noDataValue: -9999,
   },
 
   initialize: function(options) {
@@ -88,7 +89,7 @@ L.LeafletGeotiff.Plotty = L.LeafletGeotiffRenderer.extend({
       canvas: plottyCanvas,
       useWebGL: false
     });
-    plot.setNoDataValue(-9999);
+    plot.setNoDataValue(this.options.noDataValue);
     plot.render();
 
     this.colorScaleData = plot.colorScaleCanvas.toDataURL();
