@@ -14,7 +14,7 @@
       clampHigh: true,
       displayMin: 0,
       displayMax: 1,
-      noDataValue: -9999,
+      noDataValue: -9999
     },
     initialize: function initialize(options) {
       if (typeof plotty === "undefined") {

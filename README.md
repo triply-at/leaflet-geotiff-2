@@ -76,6 +76,9 @@ const options = {
 
   // The block size to use for buffer
   blockSize: 65536,
+
+  // Optional, override default opacity of 1 on the image added to the map
+  opacity: 1,
 };
 
 // create layer
