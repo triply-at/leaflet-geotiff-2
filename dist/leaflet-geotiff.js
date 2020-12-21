@@ -115,6 +115,8 @@
         this._initImage();
       }
 
+      this._image.style.opacity = this.options.opacity || 1;
+
       map._panes[this.options.pane].appendChild(this._image);
 
       map.on("moveend", this._reset, this);
