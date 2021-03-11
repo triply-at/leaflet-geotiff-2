@@ -12,7 +12,7 @@ Dependencies must be loaded:
 
 - [Leaflet >= 0.7.7](http://leafletjs.com)
 - [geotiff.js == 1.0.0-beta.13](https://github.com/constantinius/geotiff.js)
-- [plotty == 0.4.1](https://github.com/santilland/plotty) (optional)
+- [plotty >= 0.4.4](https://github.com/santilland/plotty) (optional)
 
 ```javascript
 import "leaflet-geotiff-2";

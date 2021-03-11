@@ -29,6 +29,6 @@
     "rollup-plugin-babel": "^4.3.3"
   },
   "optionalDependencies": {
-    "plotty": "^0.4.1"
+    "plotty": "^0.4.4"
   }
 }
