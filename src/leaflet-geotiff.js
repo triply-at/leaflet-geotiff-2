@@ -98,7 +98,7 @@ L.LeafletGeotiff = L.ImageOverlay.extend({
       this.options.renderer.setParent(this);
     }
     if (this.options.sourceFunction) {
-      this.sourceFunction = this.options.sourceFunction;
+      this.sourceFunction = GeoTIFF.fromArrayBuffer;
     }
     if (this.options.blockSize) {
       this._blockSize = this.options.blockSize;
